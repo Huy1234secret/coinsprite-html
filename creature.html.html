@@ -1484,8 +1484,9 @@ detailDrops.innerHTML = lines.length
   <script>
     (() => {
       const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-      const isHunting = file.includes('hunting');
-      const isCreature = file.includes('creature');
+      const url = location.href.toLowerCase();
+      const isHunting = file.includes('hunting') || url.includes('hunting');
+      const isCreature = file.includes('creature') || url.includes('creature');
       const isHome = !isHunting && !isCreature;
 
       // Active styles

@@ -420,7 +420,6 @@
 </style>
 </head>
 <body>
-<body>
   <div class="page">
     <!-- Top bar -->
     <header class="topbar">
@@ -667,8 +666,9 @@
     });
     (() => {
       const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-      const isHunting = file.includes('hunting');
-      const isCreature = file.includes('creature');
+      const url = location.href.toLowerCase();
+      const isHunting = file.includes('hunting') || url.includes('hunting');
+      const isCreature = file.includes('creature') || url.includes('creature');
       const isHome = !isHunting && !isCreature;
 
       // Force navigation to change the *top page* (Google Sites embeds may iframe this HTML).
