@@ -426,7 +426,7 @@
   </style>
 </head>
 
-<body>
+<body data-page="home">
   <div class="page">
     <!-- Top bar -->
     <header class="topbar">
@@ -522,9 +522,12 @@
     (() => {
       const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
       const url = location.href.toLowerCase();
-      const isHunting = file.includes('hunting') || url.includes('hunting');
-      const isCreature = file.includes('creature') || url.includes('creature');
-      const isHome = !isHunting && !isCreature;
+      const page = (document.body.dataset.page || '').toLowerCase();
+      const detectHunting = file.includes('hunting') || url.includes('hunting');
+      const detectCreature = file.includes('creature') || url.includes('creature');
+      const isHunting = page ? page === 'hunting' : detectHunting;
+      const isCreature = page ? page === 'creature' : detectCreature;
+      const isHome = page ? page === 'home' : (!isHunting && !isCreature);
 
       // Active styles
       const homeTab = document.querySelector('.tab[data-page="home"]');
