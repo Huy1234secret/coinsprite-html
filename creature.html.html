@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Item Search</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>CoinSprite • Creature Index</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+  <base target="_self" />
 
   <style>
           :root{
@@ -146,43 +151,6 @@
         color-mix(in srgb, var(--accent2) 12%, transparent)
       );
   }
-    :root{
-      --bg:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --border:rgba(15,23,42,.12);
-      --shadow:0 12px 30px rgba(2,6,23,.08);
-      --radius:16px;
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      padding:252px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    .wrap{
-      max-width: 920px;
-      margin: 0 auto;
-    }
-
-    .title{
-      font-weight: 900;
-      font-size: 26px;
-      margin: 0 0 12px;
-      letter-spacing: .2px;
-    }
-
-    .searchbar{
-      position: relative;
-      top: 0;
-      z-index: 10;
-      background: var(--bg);
-      padding: 10px 0 14px;
-    }
-
     .input{
       width: 100%;
       padding: 14px 16px;
@@ -805,14 +773,14 @@
         </div>
 
         <nav class="nav" aria-label="Navigation">
-          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
+          <a class="tab" href="index.html.html" data-page="home">Home</a>
 
           <div class="dd" data-dd>
             <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
               Features <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
+              <a class="dd-item" role="menuitem" href="hunting.html.html" data-page="hunting">Hunting</a>
             </div>
           </div>
 
@@ -821,7 +789,7 @@
               Index <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+              <a class="dd-item" role="menuitem" href="creature.html.html" data-page="creature">Creature</a>
             </div>
           </div>
         </nav>
