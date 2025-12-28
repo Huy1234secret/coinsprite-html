@@ -1,0 +1,1547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Item Search</title>
+
+  <style>
+          :root{
+    --tb-bg: rgba(255,255,255,.72);
+    --tb-border: rgba(15,23,42,.12);
+    --tb-text: #0f172a;
+    --tb-muted: rgba(15,23,42,.70);
+    --tb-shadow: 0 10px 28px rgba(2,6,23,.10);
+    --accent1:#4f46e5;
+    --accent2:#f97316;
+    --radius: 999px;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root{
+      --tb-bg: rgba(11,18,32,.72);
+      --tb-border: rgba(255,255,255,.14);
+      --tb-text: #e8eefc;
+      --tb-muted: rgba(232,238,252,.75);
+      --tb-shadow: 0 10px 28px rgba(0,0,0,.35);
+      --accent1:#7c7cff;
+      --accent2:#ff9a5f;
+    }
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      background: var(--tb-bg);
+      border: 1px solid var(--tb-border);
+      border-radius: 16px;
+      overflow: visible;
+    }
+    .dd-menu{
+  z-index: 10000;
+}
+
+  .topbar::before{
+    content:"";
+    display:block;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+  }
+
+  .topbar-inner{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    min-width: 150px;
+  }
+
+  .logo{
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    border: 1px solid var(--tb-border);
+    box-shadow: var(--tb-shadow);
+    background:
+      radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.55), transparent 60%),
+      linear-gradient(135deg, color-mix(in srgb, var(--accent1) 70%, #fff),
+                           color-mix(in srgb, var(--accent2) 70%, #fff));
+  }
+
+  .brand b{
+    display:block;
+    color: var(--tb-text);
+    font-size: 14px;
+    letter-spacing: .2px;
+  }
+
+  .brand small{
+    display:block;
+    margin-top: 2px;
+    color: var(--tb-muted);
+    font-size: 12px;
+  }
+
+  .nav{
+    display:flex;
+    gap: 10px;
+    align-items:center;
+  }
+
+  .tab{
+    position: relative;
+    text-decoration:none;
+    color: var(--tb-text);
+    font-weight: 800;
+    font-size: 14px;
+    padding: 10px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--tb-border);
+    background: rgba(255,255,255,.18);
+    box-shadow: var(--tb-shadow);
+    transition: transform .12s ease, border-color .12s ease;
+    white-space: nowrap;
+  }
+
+  .tab:hover{
+    transform: translateY(-1px);
+    border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent1));
+  }
+
+  .tab::after{
+    content:"";
+    position:absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 7px;
+    height: 2px;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .18s ease;
+    opacity: .9;
+  }
+
+  .tab.active::after{ transform: scaleX(1); }
+  .tab.active{
+    border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+    background:
+      linear-gradient(135deg,
+        color-mix(in srgb, var(--accent1) 16%, transparent),
+        color-mix(in srgb, var(--accent2) 12%, transparent)
+      );
+  }
+    :root{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:rgba(15,23,42,.12);
+      --shadow:0 12px 30px rgba(2,6,23,.08);
+      --radius:16px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:252px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .title{
+      font-weight: 900;
+      font-size: 26px;
+      margin: 0 0 12px;
+      letter-spacing: .2px;
+    }
+
+    .searchbar{
+      position: relative;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      padding: 10px 0 14px;
+    }
+
+    .input{
+      width: 100%;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      outline: none;
+      font-size: 16px;
+      box-shadow: var(--shadow);
+    }
+    .input:focus{
+      border-color: rgba(59,130,246,.45);
+      box-shadow: 0 0 0 4px rgba(59,130,246,.12), var(--shadow);
+    }
+
+    .meta{
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.02);
+      font-weight: 700;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .card{
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 12px;
+      background: #fff;
+      box-shadow: 0 10px 22px rgba(2,6,23,.05);
+      transition: transform .12s ease;
+    }
+    .card:hover{ transform: translateY(-1px); }
+
+    .name{
+      font-weight: 900;
+      margin: 0 0 6px;
+      font-size: 15px;
+      line-height: 1.2;
+    }
+    .desc{
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .empty{
+      display:none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px){
+      body{ padding: 16px; }
+      .grid{ grid-template-columns: 1fr; }
+      .title{ font-size: 22px; }
+      .input{ font-size: 16px; } /* keep iOS from zooming */
+    }
+    :root{ --pad: clamp(12px, 4vw, 28px); }
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      padding: var(--pad);
+      background-image: url("https://i.ibb.co/1tLydhdL/201a90d2455916fa002bee91936bcdd5.jpg");
+      background-repeat: repeat;
+      background-size: auto;
+      background-position: top left;
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .page{
+      max-width: 980px;
+      margin: 0 auto;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.92) 85%, rgba(255,255,255,0) 100%);
+      border-radius: 16px;
+      padding: var(--pad);
+      box-shadow: 0 14px 40px rgba(0,0,0,.12);
+    }
+    a { color: rgb(213, 103, 0); }
+    a:visited { color: rgb(127, 62, 0); }
+    a:hover { color: rgb(255, 181, 111); }
+    a:active { color: rgb(255, 255, 255); }
+
+    h1[id], h2[id], h3[id]{ scroll-margin-top: 18px; }
+
+    .TitleWrap{ text-align:center; }
+  
+
+    /* ===== Topbar (same design as index.html) ===== */
+    :root{
+      --tb-bg: rgba(255,255,255,.72);
+      --tb-border: rgba(15,23,42,.12);
+      --tb-text: #0f172a;
+      --tb-muted: rgba(15,23,42,.70);
+      --tb-shadow: 0 10px 28px rgba(2,6,23,.10);
+      --accent1:#4f46e5;
+      --accent2:#f97316;
+      --tb-radius: 999px;
+      --ease:cubic-bezier(.2,.9,.2,1);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --tb-bg: rgba(11,18,32,.72);
+        --tb-border: rgba(255,255,255,.14);
+        --tb-text: #e8eefc;
+        --tb-muted: rgba(232,238,252,.75);
+        --tb-shadow: 0 10px 28px rgba(0,0,0,.35);
+        --accent1:#7c7cff;
+        --accent2:#ff9a5f;
+      }
+    }
+
+    
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  isolation: isolate;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  background: var(--tb-bg);
+      border: 1px solid var(--tb-border);
+  border-radius: 16px;
+  overflow: visible; /* allow dropdowns */
+}
+.topbar::before{ content:none; }
+
+.topbar-inner{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .brand-logo{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      box-shadow: var(--tb-shadow);
+      object-fit: cover;
+      image-rendering: pixelated;
+      background: rgba(255,255,255,.15);
+      flex: 0 0 auto;
+    }
+
+    .brand b{
+      display:block;
+      color: var(--tb-text);
+      font-size: 14px;
+      letter-spacing: .2px;
+      font-weight: 900;
+    }
+    .brand small{
+      display:block;
+      margin-top: 2px;
+      color: var(--tb-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    /* IMPORTANT: override any global <a> colors */
+    .topbar a.tab{
+      color: var(--tb-text) !important;
+      text-decoration:none !important;
+    }
+
+    .tab{
+      position: relative;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: var(--tb-radius);
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.18);
+      box-shadow: var(--tb-shadow);
+      transition: transform .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+    .tab:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent1));
+    }
+    .tab::after{
+      content:"";
+      position:absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 7px;
+      height: 2px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .18s ease;
+      opacity: .9;
+    }
+    .tab.active::after{ transform: scaleX(1); }
+    .tab.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        );
+    }
+
+    /* ===== Dropdown tabs ===== */
+    .dd{ position: relative; }
+
+    /* make <button> look exactly like .tab */
+    .tab-btn{
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255,255,255,.18);
+      color: var(--tb-text);
+      border: 1px solid var(--tb-border);
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tab-btn::-moz-focus-inner{ border:0; padding:0; }
+
+    .caret{
+      display:inline-block;
+      transform: translateY(-.02em);
+      opacity:.85;
+    }
+
+    .dd-menu{
+      position: absolute;
+      z-index: 10000;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 180px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--tb-border);
+      background: color-mix(in srgb, var(--tb-bg) 92%, transparent);
+      box-shadow: var(--tb-shadow);
+      backdrop-filter: blur(14px);
+      display: none;
+    }
+    .dd.open .dd-menu{ display:block; animation: ddPop .14s var(--ease) both; }
+
+    @keyframes ddPop{
+      from{ opacity:0; transform: translateY(-6px) scale(.98); }
+      to  { opacity:1; transform: translateY(0) scale(1); }
+    }
+
+    .dd-item{
+      display:block;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.16);
+      box-shadow: var(--tb-shadow);
+      font-weight: 900;
+      white-space: nowrap;
+      color: var(--tb-text) !important;
+      text-decoration: none !important;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .dd-item:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent2));
+    }
+    .dd-item.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        ), rgba(255,255,255,.16);
+    }
+
+    /* small screens: keep menus inside viewport */
+    @media (max-width: 520px){
+      .topbar-inner{ flex-wrap: wrap; }
+      .brand{ min-width: auto; }
+      .dd-menu{ right: 0; left: auto; }
+    }
+
+    /* --- Creature card updates (keeps page + topbar styles) --- */
+    .card.card-mini{ cursor:pointer; }
+    .card.card-mini:hover{ transform: translateY(-2px); }
+
+    .cimgWrap{
+      width: 100%;
+      aspect-ratio: 1.7 / 1;
+      border-radius: 14px;
+      overflow:hidden;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.03);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom: 10px;
+    }
+    .cimg{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .cardBottom{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .cardBottom .name{ margin:0; }
+
+    /* Detail panel (in-page, pushes grid down) */
+    .detailWrap{
+      overflow:hidden;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: max-height .45s var(--ease), opacity .20s ease, transform .20s ease;
+      margin-bottom: 0;
+    }
+    .detailWrap.open{
+      max-height: 2200px;
+      opacity: 1;
+      transform: none;
+      margin-bottom: 18px;
+    }
+    .detailCard{
+      position: relative;
+    }
+    .detailClose{
+      position:absolute;
+      top: 10px;
+      right: 10px;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.04);
+      color: var(--text);
+      font-weight: 900;
+      cursor:pointer;
+    }
+    .detailClose:hover{ transform: translateY(-1px); }
+
+    .detailTop{
+      display:flex;
+      gap: 14px;
+      align-items:flex-start;
+      padding-right: 44px; /* room for X */
+    }
+    .detailImgBox{
+      width: 170px;
+      min-width: 170px;
+      aspect-ratio: 1 / 1;
+      border-radius: 18px;
+      border: 2px solid rgba(2,6,23,.9);
+      background: rgba(2,6,23,.02);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .detailImg{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+    .detailMeta{ flex:1; }
+    .detailNameRow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .detailName{
+      margin:0;
+      font-size: 28px;
+      line-height: 1.1;
+      letter-spacing: .2px;
+    }
+    .detailChips{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 8px 0 10px;
+    }
+    .pill.hp{ background: rgba(239,68,68,.20); border-color: rgba(239,68,68,.25); }
+    .pill.def{ background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.22); }
+    .pill.rarity{ background: rgba(2,6,23,.04); }
+
+    .detailTags{
+      min-height: 26px; /* keeps spacing even when empty */
+      display:flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .detailLine{
+      margin: 12px 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.03);
+      font-weight: 800;
+    }
+
+    .detailSection{
+      margin-top: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.03);
+      overflow:hidden;
+    }
+    .detailSectionTitle{
+      padding: 10px 12px;
+      background: rgba(2,6,23,.08);
+      font-weight: 900;
+      letter-spacing: .6px;
+    }
+    .detailList{
+      padding: 12px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 110px;
+    }
+
+    .rowLine{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .rowLeft{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 13px;
+      line-height: 1;
+      border: 1px solid rgba(2,6,23,.20);
+    }
+    .badge.effect{ background: #14532d; color: #fff; border-color: rgba(20,83,45,.55); }
+    .badge.penalty{ background: #000; color:#fff; border-color: rgba(0,0,0,.4); }
+
+    .dropRow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-weight: 800;
+    }
+    .dropIcon{
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.04);
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .dropIcon.coinXp{
+      image-rendering: auto;
+    }
+    .emojiIcon{
+      width: 22px;
+      height: 22px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: rgba(2,6,23,.04);
+      font-size: 14px;
+    }
+
+    .removedTag{
+      display:inline-flex;
+      align-items:center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 900;
+      border: 1px solid rgba(239,68,68,.55);
+      background: rgba(239,68,68,.16);
+      color: #b91c1c;
+      animation: removedPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes removedPulse{
+      0%,100%{ color:#fff; background: rgba(239,68,68,.85); box-shadow: 0 0 0 rgba(239,68,68,0); }
+      50%{ color:#b91c1c; background: rgba(239,68,68,.18); box-shadow: 0 0 22px rgba(239,68,68,.35); }
+    }
+
+    @media (max-width: 640px){
+      .detailTop{ flex-direction: column; }
+      .detailImgBox{ width: 100%; min-width: 0; max-width: 360px; }
+      .detailName{ font-size: 24px; }
+    }
+
+  
+    .rare{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:cyan; font-weight:1000; }
+    .epic{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:rgb(255, 0, 255); font-weight:1000; }
+
+    .legendary{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:1000;
+      background: linear-gradient(90deg,#ffae00 0%,rgb(255,255,0) 25%,#ffae00 50%,rgb(255,255,0) 75%,#ffae00 100%);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      color: transparent;
+      -webkit-background-clip:text;
+      background-clip:text;
+      animation: LegendaryAni 2.2s linear infinite;
+    }
+    @keyframes LegendaryAni{ from{background-position:0% 0%;} to{background-position:100% 100%;} }
+
+    .mythical{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:1000;
+      background: linear-gradient(90deg,rgb(255,0,0) 0%,rgb(255,255,255) 25%,rgb(255,0,0) 50%,rgb(255,255,255) 75%,rgb(255,0,0) 100%);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      color: transparent;
+      -webkit-background-clip:text;
+      background-clip:text;
+      animation: MythicalAni 2.2s linear infinite;
+    }
+    @keyframes MythicalAni{ from{background-position:0% 0%;} to{background-position:100% 100%;} }
+
+    .secret{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight: 900;
+      --stripe: 13px;
+      --period: calc(var(--stripe) * 2);
+      background-image: repeating-linear-gradient(180deg,#cacaca 0 var(--stripe),#000 var(--stripe) var(--period));
+      background-size: 100% var(--period);
+      background-position: 50% 0;
+      background-repeat: repeat;
+      -webkit-background-clip: text;
+      background-clip:text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: SecretAni 2s linear infinite;
+      will-change: background-position;
+      transform: translateZ(0);
+    }
+    @keyframes SecretAni{ to{ background-position: 50% calc(var(--period) * -1); } }
+
+</style>
+</head>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img class="brand-logo" src="https://i.ibb.co/yn9dt1vx/Normal.png" alt="CoinSprite logo">
+          <div>
+            <b>CoinSprite</b>
+            <small>Discord Bot Wikia</small>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Navigation">
+          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
+              Features <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
+            </div>
+          </div>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="index">
+              Index <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+
+  <div class="wrap">
+    <h1 class="title">Creature Index</h1>
+
+    <div class="searchbar">
+      <input id="search" class="input" type="search" placeholder="Type to search creatures... (example: moss, vine, orchid)" autocomplete="off" />
+      <div class="meta">
+        <span class="pill">Showing: <span id="count">0</span></span>
+        <span class="pill">Total: <span id="total">0</span></span>
+        <span class="pill" id="queryPill" style="display:none;">Query: “<span id="queryText"></span>”</span>
+      </div>
+    </div>
+
+    
+    <div id="detailWrap" class="detailWrap" hidden>
+      <div class="card detailCard">
+        <button class="detailClose" id="detailClose" type="button" aria-label="Close">✕</button>
+
+        <div class="detailTop">
+          <div class="detailImgBox">
+            <img id="detailImg" class="detailImg" alt="" loading="lazy">
+          </div>
+
+          <div class="detailMeta">
+            <div class="detailNameRow">
+              <h2 id="detailName" class="detailName">Creature Name</h2>
+              <span id="detailRemoved" class="removedTag" style="display:none;">REMOVED</span>
+            </div>
+
+            <div id="detailChips" class="detailChips"></div>
+
+            <div id="detailTags" class="detailTags"></div>
+          </div>
+        </div>
+
+        <div id="detailCounter" class="detailLine"></div>
+
+        <div class="detailSection">
+          <div class="detailSectionTitle">ATTACKS:</div>
+          <div id="detailAttacks" class="detailList"></div>
+        </div>
+
+        <div class="detailSection">
+          <div class="detailSectionTitle">ITEM DROPS:</div>
+          <div id="detailDrops" class="detailList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="grid" class="grid"></div>
+    <div id="empty" class="empty">No creatures matched your search.</div>
+  </div>
+  </div>
+
+<script>
+    // Load creatures + items directly from your GitHub repo (public)
+    const CREATURES_JS_URL = "https://raw.githubusercontent.com/Huy1234secret/CoinSprite/main/src/creatures.js";
+    const ITEMS_JS_URL    = "https://raw.githubusercontent.com/Huy1234secret/CoinSprite/main/src/items.js";
+
+    let items = [];              // creatures list
+    let itemsById = new Map();   // creatureId -> creature
+    let itemMap = new Map();     // itemId -> { name, image }
+
+    const grid = document.getElementById("grid");
+    const empty = document.getElementById("empty");
+    const search = document.getElementById("search");
+    const countEl = document.getElementById("count");
+    const totalEl = document.getElementById("total");
+    const queryPill = document.getElementById("queryPill");
+    const queryText = document.getElementById("queryText");
+
+    // Detail panel refs
+    const detailWrap = document.getElementById("detailWrap");
+    const detailClose = document.getElementById("detailClose");
+    const detailImg = document.getElementById("detailImg");
+    const detailName = document.getElementById("detailName");
+    const detailChips = document.getElementById("detailChips");
+    const detailTags = document.getElementById("detailTags");
+    const detailCounter = document.getElementById("detailCounter");
+    const detailAttacks = document.getElementById("detailAttacks");
+    const detailDrops = document.getElementById("detailDrops");
+    const detailRemoved = document.getElementById("detailRemoved");
+
+    // Escape HTML so names can't break the page
+    function escapeHTML(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    
+    function rarityClass(r){
+      const s = String(r || "").toLowerCase();
+      if(s.includes("secret")) return "secret";
+      if(s.includes("myth")) return "mythical";
+      if(s.includes("legend")) return "legendary";
+      if(s.includes("epic")) return "epic";
+      if(s.includes("rare")) return "rare";
+      return "";
+    }
+
+function fmtPct01(n){
+      // chance in file is 0..1
+      const x = (Number(n) || 0) * 100;
+      if(!isFinite(x)) return "0";
+      // keep up to 2 decimals (don't floor)
+      let s = x.toFixed(2);
+      s = s.replace(/\.00$/, "");
+      s = s.replace(/(\.\d)0$/, "$1");
+      return s;
+    }
+
+    function fmtPercent(n){
+      // percent in file can be 0..1 (poison percent) or already 0..100 (counter_chance)
+      const v = Number(n);
+      if(!isFinite(v)) return "0";
+      const x = (v <= 1) ? v * 100 : v;
+      const s = (Math.round(x * 10) / 10).toString();
+      return s.endsWith(".0") ? s.slice(0, -2) : s;
+    }
+
+    function avgDamage(dmg){
+      const mn = Number(dmg?.min);
+      const mx = Number(dmg?.max);
+      if(!isFinite(mn) || !isFinite(mx)) return null;
+      const a = (mn + mx) / 2;
+      const s = (Math.round(a * 10) / 10).toString();
+      return s.endsWith(".0") ? s.slice(0, -2) : s;
+    }
+
+    function closeDetail(){
+      if(!detailWrap || detailWrap.hidden) return;
+      detailWrap.classList.remove("open");
+      const onEnd = (e) => {
+        if(e.target !== detailWrap) return;
+        detailWrap.hidden = true;
+        detailWrap.removeEventListener("transitionend", onEnd);
+      };
+      detailWrap.addEventListener("transitionend", onEnd);
+    }
+
+    function openDetail(creature){
+      if(!creature) return;
+
+      // Basic
+      detailImg.src = creature.image || "";
+      detailImg.alt = creature.name || "Creature";
+      detailName.textContent = creature.name || "Creature";
+
+      // Removed tag
+      const cc = Number(creature.counter_chance ?? 0);
+      if(cc === 0){
+        detailRemoved.style.display = "inline-flex";
+      }else{
+        detailRemoved.style.display = "none";
+      }
+
+      // Chips (Rarity / BaseHp / Shield%)
+      const defPct = fmtPercent((creature.defense ?? 0));
+      detailChips.innerHTML = `
+        <span class="pill rarity">Rarity: <b class="${rarityClass(creature.rarity)}">${escapeHTML(creature.rarity || "?")}</b></span>
+        <span class="pill hp">BaseHp: <b>${escapeHTML(creature.baseHealth ?? "?")}</b></span>
+        <span class="pill def">Shield%: <b>${escapeHTML(defPct)}%</b></span>
+      `;
+
+      // Other tags placeholder (only show if we have anything extra)
+      const extra = [];
+      if (creature.attackType) extra.push(`<span class="pill" style="padding:6px 12px;">${escapeHTML(creature.attackType)}</span>`);
+      detailTags.innerHTML = extra.join("");
+
+      // Counter line
+      detailCounter.textContent = `Counter Chance: ${fmtPercent(cc)}% of ${creature.rarity || "?"}`;
+
+      // Attacks
+      if(Array.isArray(creature.actions) && creature.actions.length){
+        detailAttacks.innerHTML = creature.actions.map(a => {
+          const aName = a?.name || "Attack";
+          const avg = avgDamage(a?.damage);
+          const text = `+ ${aName} : ${avg ?? "?"}`;
+
+          const badges = [];
+          // poison
+          if(a?.poison){
+            const p = fmtPercent(a.poison.percent ?? 0);
+            let dur = a.poison.duration;
+            let durTxt = "0";
+            if(dur === Infinity || dur === "Infinity" || dur === "INF" || dur === "inf") durTxt = "∞";
+            else if (isFinite(Number(dur))) durTxt = String(Number(dur));
+            badges.push(`<span class="badge effect">Poison: ${escapeHTML(p)}%, ${escapeHTML(durTxt)} turns</span>`);
+          }
+
+          // other effects (if present)
+          const otherKeys = ["burn","bleed","stun","freeze","slow","weaken","sleep","blind","confuse","fear"];
+          otherKeys.forEach(k => {
+            if(a && Object.prototype.hasOwnProperty.call(a, k)){
+              badges.push(`<span class="badge effect">${escapeHTML(k.charAt(0).toUpperCase() + k.slice(1))}</span>`);
+            }
+          });
+
+          // action penalty
+          const pen = a?.action_penalty ?? a?.actionPenalty ?? null;
+          if(isFinite(Number(pen)) && Number(pen) > 0){
+            badges.push(`<span class="badge penalty">-${escapeHTML(pen)} action</span>`);
+          }
+
+          return `
+            <div class="rowLine">
+              <div class="rowLeft">
+                <span style="font-weight:900;">${escapeHTML(text)}</span>
+                ${badges.join("")}
+              </div>
+            </div>
+          `;
+        }).join("");
+      }else{
+        detailAttacks.innerHTML = `<div style="opacity:.75; font-weight:800;">No attacks listed.</div>`;
+      }
+
+// Drops (coins + xp + items)
+const lines = [];
+
+// Coins / Hunt XP reward (range)
+const coinsReward = creature?.reward?.coins;
+if(coinsReward && (isFinite(Number(coinsReward.min)) || isFinite(Number(coinsReward.max)))){
+  const mn = isFinite(Number(coinsReward.min)) ? Number(coinsReward.min) : Number(coinsReward.max);
+  const mx = isFinite(Number(coinsReward.max)) ? Number(coinsReward.max) : Number(coinsReward.min);
+  const txt = (mn === mx) ? `${mn}` : `${mn} - ${mx}`;
+  lines.push(`
+    <div class="dropRow">
+      <img class="dropIcon coinXp" src="https://i.ibb.co/XZfmmG5s/Coin.png" alt="Coin">
+      <span>Coins: ${escapeHTML(txt)}</span>
+    </div>
+  `);
+}
+
+const xpReward = creature?.reward?.xp;
+if(xpReward && (isFinite(Number(xpReward.min)) || isFinite(Number(xpReward.max)))){
+  const mn = isFinite(Number(xpReward.min)) ? Number(xpReward.min) : Number(xpReward.max);
+  const mx = isFinite(Number(xpReward.max)) ? Number(xpReward.max) : Number(xpReward.min);
+  const txt = (mn === mx) ? `${mn}` : `${mn} - ${mx}`;
+  lines.push(`
+    <div class="dropRow">
+      <img class="dropIcon coinXp" src="https://i.ibb.co/HDH0PJxr/XP.png" alt="Hunt XP">
+      <span>Hunt XP: ${escapeHTML(txt)}</span>
+    </div>
+  `);
+}
+
+const drops = Array.isArray(creature.drops) ? creature.drops : [];
+drops.forEach(d => {
+  const itemId = d?.itemId;
+  if(!itemId) return;
+  const itm = itemMap.get(itemId);
+  const name = itm?.name || itemId;
+  const img = itm?.image || "";
+  const amount = d?.amount;
+  const amountTxt = (isFinite(Number(amount)) && Number(amount) > 1) ? `${Number(amount)}x ` : "";
+  const chanceTxt = fmtPct01(d?.chance ?? 0);
+
+  lines.push(`
+    <div class="dropRow">
+      ${img ? `<img class="dropIcon" src="${escapeHTML(img)}" alt="">` : `<span class="dropIcon" aria-hidden="true"></span>`}
+      <span>${escapeHTML(amountTxt + name)}: ${escapeHTML(chanceTxt)}%</span>
+    </div>
+  `);
+});
+
+detailDrops.innerHTML = lines.length
+  ? lines.join("")
+  : `<div style="opacity:.75; font-weight:800;">No drops listed.</div>`;
+
+      // Show + animate
+      detailWrap.hidden = false;
+      requestAnimationFrame(() => detailWrap.classList.add("open"));
+
+      // Scroll into view gently
+      const y = detailWrap.getBoundingClientRect().top + window.scrollY - 12;
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    }
+
+    if(detailClose){
+      detailClose.addEventListener("click", closeDetail);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeDetail();
+    });
+
+    // ---------- Parsing helpers (no eval) ----------
+    function extractBalanced(src, start, openChar, closeChar){
+      let i = start;
+      let depth = 0;
+      let inStr = false;
+      let strQ = "";
+      let esc = false;
+
+      for(; i < src.length; i++){
+        const ch = src[i];
+
+        if(inStr){
+          if(esc){ esc = false; continue; }
+          if(ch === "\\"){ esc = true; continue; }
+          if(ch === strQ){ inStr = false; strQ = ""; continue; }
+          continue;
+        }else{
+          if(ch === "'" || ch === '"' || ch === "`"){ inStr = true; strQ = ch; continue; }
+          if(ch === openChar){ depth++; }
+          else if(ch === closeChar){
+            depth--;
+            if(depth === 0){
+              return { text: src.slice(start, i+1), end: i };
+            }
+          }
+        }
+      }
+      return null;
+    }
+
+    function matchStr(src, rx){
+      const m = src.match(rx);
+      return m ? m[1] : null;
+    }
+    function matchNum(src, rx){
+      const m = src.match(rx);
+      return m ? Number(m[1]) : null;
+    }
+
+    function extractConstArrayBlock(src, constName){
+      const rx = new RegExp(String.raw`const\s+${constName}\s*=\s*\[`, "m");
+      const m = src.match(rx);
+      if(!m) return null;
+      const idx = src.indexOf("[", m.index);
+      const block = extractBalanced(src, idx, "[", "]");
+      return block ? block.text : null;
+    }
+
+    function extractConstObjectBlocks(src){
+      const out = [];
+      const re = /const\s+([A-Z0-9_]+)\s*=\s*\{/g;
+      let m;
+      while((m = re.exec(src))){
+        const constName = m[1];
+        const braceIndex = src.indexOf("{", m.index);
+        if(braceIndex < 0) continue;
+        const block = extractBalanced(src, braceIndex, "{", "}");
+        if(!block) continue;
+        out.push({ constName, objText: block.text });
+        re.lastIndex = block.end + 1;
+      }
+      return out;
+    }
+
+    function extractPropObject(objText, propName){
+      const rx = new RegExp(String.raw`(^|[,{])\s*${propName}\s*:\s*\{`, "m");
+      const m = objText.match(rx);
+      if(!m) return null;
+      const idx = objText.indexOf("{", m.index);
+      const block = extractBalanced(objText, idx, "{", "}");
+      return block ? block.text : null;
+    }
+
+    function extractPropArray(objText, propName){
+      const rx = new RegExp(String.raw`(^|[,{])\s*${propName}\s*:\s*\[`, "m");
+      const m = objText.match(rx);
+      if(!m) return null;
+      const idx = objText.indexOf("[", m.index);
+      const block = extractBalanced(objText, idx, "[", "]");
+      return block ? block.text : null;
+    }
+
+    function parseActionObjects(arrText){
+      const actions = [];
+      if(!arrText) return actions;
+
+      let i = 0;
+      while(i < arrText.length){
+        const j = arrText.indexOf("{", i);
+        if(j === -1) break;
+        const block = extractBalanced(arrText, j, "{", "}");
+        if(!block) break;
+        const t = block.text;
+
+        const name = matchStr(t, /\bname\s*:\s*['"`]([^'"`]+)['"`]/);
+        const key = matchStr(t, /\bkey\s*:\s*['"`]([^'"`]+)['"`]/);
+        const chance = matchNum(t, /\bchance\s*:\s*([0-9.]+)/);
+
+        const dmgObj = extractPropObject(t, "damage");
+        const dmgMin = dmgObj ? matchNum(dmgObj, /\bmin\s*:\s*([0-9.]+)/) : null;
+        const dmgMax = dmgObj ? matchNum(dmgObj, /\bmax\s*:\s*([0-9.]+)/) : null;
+
+        // poison: { percent: 0.25, duration: Infinity }
+        const poisonObj = extractPropObject(t, "poison");
+        let poison = null;
+        if(poisonObj){
+          const percent = matchNum(poisonObj, /\bpercent\s*:\s*([0-9.]+)/);
+          const durRaw = matchStr(poisonObj, /\bduration\s*:\s*([A-Za-z0-9_.]+)/);
+          const duration = (durRaw === "Infinity") ? Infinity : (isFinite(Number(durRaw)) ? Number(durRaw) : durRaw);
+          poison = { percent, duration };
+        }
+
+        // action penalty (if present)
+        const action_penalty = matchNum(t, /\baction_penalty\s*:\s*([0-9.]+)/) ?? matchNum(t, /\bactionPenalty\s*:\s*([0-9.]+)/);
+
+        actions.push({
+          key, name,
+          chance,
+          damage: { min: dmgMin, max: dmgMax },
+          poison,
+          action_penalty
+        });
+
+        i = block.end + 1;
+      }
+      return actions;
+    }
+
+    function parseDrops(arrText){
+      const drops = [];
+      if(!arrText) return drops;
+
+      let i = 0;
+      while(i < arrText.length){
+        const j = arrText.indexOf("{", i);
+        if(j === -1) break;
+        const block = extractBalanced(arrText, j, "{", "}");
+        if(!block) break;
+        const t = block.text;
+
+        const itemId = matchStr(t, /\bitemId\s*:\s*['"`]([^'"`]+)['"`]/);
+        const chance = matchNum(t, /\bchance\s*:\s*([0-9.]+)/);
+        const amount = matchNum(t, /\bamount\s*:\s*([0-9.]+)/);
+
+        if(itemId){
+          const obj = { itemId, chance: isFinite(Number(chance)) ? chance : 0 };
+          if(isFinite(Number(amount))) obj.amount = amount;
+          drops.push(obj);
+        }
+        i = block.end + 1;
+      }
+      return drops;
+    }
+
+    function parseCreatureObject(objText, dungeonDrops){
+      const name = matchStr(objText, /(?:^|[,{])\s*name\s*:\s*['"`]([^'"`]+)['"`]/);
+      if(!name) return null;
+
+      const rarity = matchStr(objText, /(?:^|[,{])\s*rarity\s*:\s*['"`]([^'"`]+)['"`]/) || "?";
+      const baseHealth = matchNum(objText, /(?:^|[,{])\s*baseHealth\s*:\s*([0-9.]+)/);
+      const image = matchStr(objText, /(?:^|[,{])\s*image\s*:\s*['"`]([^'"`]+)['"`]/);
+      const defense = matchNum(objText, /(?:^|[,{])\s*defense\s*:\s*([0-9.]+)/) ?? 0;
+      const counter_chance = matchNum(objText, /(?:^|[,{])\s*counter_chance\s*:\s*([0-9.]+)/) ?? 0;
+      const attackType = matchStr(objText, /(?:^|[,{])\s*attackType\s*:\s*['"`]([^'"`]+)['"`]/) || "";
+
+      const rewardObj = extractPropObject(objText, "reward");
+      let reward = null;
+      if(rewardObj){
+        const coinsObj = extractPropObject(rewardObj, "coins");
+        const xpObj = extractPropObject(rewardObj, "xp");
+        reward = {
+          coins: coinsObj ? { min: matchNum(coinsObj, /\bmin\s*:\s*([0-9.]+)/), max: matchNum(coinsObj, /\bmax\s*:\s*([0-9.]+)/) } : null,
+          xp: xpObj ? { min: matchNum(xpObj, /\bmin\s*:\s*([0-9.]+)/), max: matchNum(xpObj, /\bmax\s*:\s*([0-9.]+)/) } : null
+        };
+      }
+
+      const actionsArr = extractPropArray(objText, "actions");
+      const actions = parseActionObjects(actionsArr || "");
+
+      const dropsArr = extractPropArray(objText, "drops");
+      let drops = parseDrops(dropsArr || "");
+
+      // Expand dungeon token drops if spread exists
+      if(dropsArr && dropsArr.includes("...DUNGEON_TOKEN_DROPS") && Array.isArray(dungeonDrops) && dungeonDrops.length){
+        drops = drops.concat(dungeonDrops);
+      }
+
+      return { name, rarity, baseHealth, image, defense, counter_chance, attackType, reward, actions, drops };
+    }
+
+    async function loadCreaturesFromGithub(){
+      const res = await fetch(CREATURES_JS_URL, { cache: "no-store" });
+      if(!res.ok) throw new Error(`Fetch failed (${res.status})`);
+      const src = await res.text();
+
+      // dungeon token drops
+      const dungeonArr = extractConstArrayBlock(src, "DUNGEON_TOKEN_DROPS");
+      const dungeonDrops = dungeonArr ? parseDrops(dungeonArr) : [];
+
+      const blocks = extractConstObjectBlocks(src);
+      const creatures = blocks
+        .map(b => parseCreatureObject(b.objText, dungeonDrops))
+        .filter(Boolean);
+
+      // de-dup by name
+      const seen = new Set();
+      const uniq = [];
+      creatures.forEach(c => {
+        const key = String(c.name).toLowerCase();
+        if(seen.has(key)) return;
+        seen.add(key);
+        uniq.push(c);
+      });
+
+      // sort by rarity then name
+      const rarityRank = { Common: 1, Uncommon: 2, Rare: 3, Epic: 4, Legendary: 5, Mythic: 6, Secret: 7 };
+      uniq.sort((a,b) => (rarityRank[a.rarity]||99)-(rarityRank[b.rarity]||99) || String(a.name).localeCompare(String(b.name)));
+
+      // add ids
+      uniq.forEach((c, idx) => c._id = `c_${idx}_${String(c.name).toLowerCase().replace(/\s+/g,"_")}`);
+
+      return uniq;
+    }
+
+    async function loadItemsFromGithub(){
+      const res = await fetch(ITEMS_JS_URL, { cache: "no-store" });
+      if(!res.ok) throw new Error(`Fetch failed (${res.status})`);
+      const src = await res.text();
+
+      // extract const ITEMS = [ ... ]
+      const idx = src.indexOf("const ITEMS");
+      if(idx === -1) return new Map();
+      const bracket = src.indexOf("[", idx);
+      if(bracket === -1) return new Map();
+      const arr = extractBalanced(src, bracket, "[", "]");
+      if(!arr) return new Map();
+
+      const map = new Map();
+      let i = 0;
+      const arrText = arr.text;
+
+      while(i < arrText.length){
+        const j = arrText.indexOf("{", i);
+        if(j === -1) break;
+        const block = extractBalanced(arrText, j, "{", "}");
+        if(!block) break;
+        const t = block.text;
+
+        const id = matchStr(t, /\bid\s*:\s*['"`]([^'"`]+)['"`]/);
+        const name = matchStr(t, /\bname\s*:\s*['"`]([^'"`]+)['"`]/);
+        const image = matchStr(t, /\bimage\s*:\s*['"`]([^'"`]+)['"`]/);
+
+        if(id){
+          map.set(id, { name: name || id, image: image || "" });
+        }
+        i = block.end + 1;
+      }
+      return map;
+    }
+
+    function render(list){
+      itemsById = new Map(list.map(c => [c._id, c]));
+
+      grid.innerHTML = list.map(it => {
+        const img = it.image || "";
+        return `
+          <div class="card card-mini" data-id="${escapeHTML(it._id)}" role="button" tabindex="0">
+            <div class="cimgWrap">
+              ${img ? `<img class="cimg" src="${escapeHTML(img)}" alt="${escapeHTML(it.name || "Creature")}" loading="lazy">` : ``}
+            </div>
+            <div class="cardBottom">
+              <p class="name">${escapeHTML(it.name || "Unknown")}</p>
+              <span class="pill" style="white-space:nowrap;"><span class="${rarityClass(it.rarity)}">${escapeHTML(it.rarity || "?")}</span></span>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // Empty state
+      if(!list.length){
+        empty.style.display = "block";
+      }else{
+        empty.style.display = "none";
+      }
+
+      countEl.textContent = list.length;
+
+      // Reset detail if the selected creature is filtered out
+      if(!detailWrap.hidden){
+        // keep it open, but if current creature isn't in list, close it
+        const currentName = detailName.textContent;
+        const stillExists = list.some(c => c.name === currentName);
+        if(!stillExists) closeDetail();
+      }
+    }
+
+    function applySearch(){
+      const q = (search.value || "").trim().toLowerCase();
+      if(q){
+        queryPill.style.display = "inline-flex";
+        queryText.textContent = q;
+      }else{
+        queryPill.style.display = "none";
+      }
+
+      const filtered = !q ? items : items.filter(it => {
+        const n = String(it.name || "").toLowerCase();
+        const r = String(it.rarity || "").toLowerCase();
+        return n.includes(q) || r.includes(q);
+      });
+
+      render(filtered);
+    }
+
+    // Click / keyboard open detail (event delegation)
+    grid.addEventListener("click", (e) => {
+      const card = e.target.closest(".card[data-id]");
+      if(!card) return;
+      const id = card.getAttribute("data-id");
+      const creature = itemsById.get(id);
+      openDetail(creature);
+    });
+
+    grid.addEventListener("keydown", (e) => {
+      if(e.key !== "Enter" && e.key !== " ") return;
+      const card = e.target.closest(".card[data-id]");
+      if(!card) return;
+      e.preventDefault();
+      const id = card.getAttribute("data-id");
+      const creature = itemsById.get(id);
+      openDetail(creature);
+    });
+
+    search.addEventListener("input", applySearch);
+
+    // --- init ---
+    (async () => {
+      empty.textContent = "Loading creatures from GitHub...";
+      empty.style.display = "block";
+      grid.innerHTML = "";
+      countEl.textContent = "0";
+      totalEl.textContent = "…";
+
+      try{
+        const [creatures, itemsMap] = await Promise.all([
+          loadCreaturesFromGithub(),
+          loadItemsFromGithub()
+        ]);
+
+        items = creatures;
+        itemMap = itemsMap;
+
+        totalEl.textContent = items.length;
+        render(items);
+      }catch(err){
+        console.error(err);
+        empty.textContent = "Failed to load creatures/items from GitHub.";
+        empty.style.display = "block";
+        totalEl.textContent = "0";
+      }
+    })();
+  </script>
+
+  <script>
+    (() => {
+      const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      const isHunting = file.includes('hunting');
+      const isCreature = file.includes('creature');
+      const isHome = !isHunting && !isCreature;
+
+      // Active styles
+      const homeTab = document.querySelector('.tab[data-page="home"]');
+      const featuresBtn = document.querySelector('.tab[data-page="features"]');
+      const indexBtn = document.querySelector('.tab[data-page="index"]');
+      const huntingItem = document.querySelector('.dd-item[data-page="hunting"]');
+      const creatureItem = document.querySelector('.dd-item[data-page="creature"]');
+
+      if (isHome && homeTab) homeTab.classList.add('active');
+      if (isHunting){
+        if (featuresBtn) featuresBtn.classList.add('active');
+        if (huntingItem) huntingItem.classList.add('active');
+      }
+      if (isCreature){
+        if (indexBtn) indexBtn.classList.add('active');
+        if (creatureItem) creatureItem.classList.add('active');
+      }
+
+      // Dropdown behavior
+      const dropdowns = Array.from(document.querySelectorAll('[data-dd]'));
+
+      const closeAll = (except = null) => {
+        dropdowns.forEach(dd => {
+          if (dd === except) return;
+          dd.classList.remove('open');
+          const btn = dd.querySelector('[data-dd-btn]');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      };
+
+      dropdowns.forEach(dd => {
+        const btn = dd.querySelector('[data-dd-btn]');
+        const menu = dd.querySelector('[data-dd-menu]');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const willOpen = !dd.classList.contains('open');
+          closeAll(dd);
+          dd.classList.toggle('open', willOpen);
+          btn.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        // Click inside menu closes it (after navigation)
+        menu.addEventListener('click', () => closeAll());
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-dd]')) closeAll();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+</body>
+</html>

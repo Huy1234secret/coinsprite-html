@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <style>
+      .tab {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        margin-right: 5px;
+      }
+
+      .tab:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      .tab.active {
+        background-color: #4f46e5;
+        color: white;
+        border: 1px solid #4f46e5;
+      }
+    </style>
+    
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<!-- (Optional) smooth font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Helps some embed viewers keep links in same frame -->
+<base target="_self"/>
+<style>
+    /* ===== Simple status card (same look, fewer rules) ===== */
+    .status-wrap{ max-width:980px; margin:18px auto; padding:0 18px; }
+    .status-card{ display:flex; gap:26px; align-items:flex-start; }
+    .status-icon{ width:110px; height:auto; image-rendering:pixelated; }
+    .status-title{ margin:0 0 8px; font-weight:900; font-size:clamp(38px,5vw,62px); letter-spacing:1px; color:#6aa84f; line-height:1; }
+    .status-list{ margin:0; padding-left:18px; list-style:square; font-size:16px; }
+    .status-list li{ margin-top:8px; }
+
+    /* phone layout */
+    @media (max-width:520px){
+      .status-card{ flex-direction:column; align-items:center; text-align:center; }
+      .status-list{ text-align:left; }
+    }
+
+    /* ===== Your rarity styles ===== */
+    .rare{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:cyan; font-weight:1000; }
+    .epic{ font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:rgb(255, 0, 255); font-weight:1000; }
+
+    .legendary{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:1000;
+      background: linear-gradient(90deg,#ffae00 0%,rgb(255,255,0) 25%,#ffae00 50%,rgb(255,255,0) 75%,#ffae00 100%);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      color: transparent;
+      -webkit-background-clip:text;
+      background-clip:text;
+      animation: LegendaryAni 2.2s linear infinite;
+    }
+    @keyframes LegendaryAni{ from{background-position:0% 0%;} to{background-position:100% 100%;} }
+
+    .mythical{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight:1000;
+      background: linear-gradient(90deg,rgb(255,0,0) 0%,rgb(255,255,255) 25%,rgb(255,0,0) 50%,rgb(255,255,255) 75%,rgb(255,0,0) 100%);
+      background-size: 200% 100%;
+      background-position: 0% 50%;
+      color: transparent;
+      -webkit-background-clip:text;
+      background-clip:text;
+      animation: MythicalAni 2.2s linear infinite;
+    }
+    @keyframes MythicalAni{ from{background-position:0% 0%;} to{background-position:100% 100%;} }
+
+    .secret{
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-weight: 900;
+      --stripe: 13px;
+      --period: calc(var(--stripe) * 2);
+      background-image: repeating-linear-gradient(180deg,#cacaca 0 var(--stripe),#000 var(--stripe) var(--period));
+      background-size: 100% var(--period);
+      background-position: 50% 0;
+      background-repeat: repeat;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: SecretAni 2s linear infinite;
+      will-change: background-position;
+      transform: translateZ(0);
+    }
+    @keyframes SecretAni{ to{ background-position: 50% calc(var(--period) * -1); } }
+
+    /* ===== Table styles ===== */
+    .center-table{ margin: 0 auto; }
+    table, td{ border:1px solid black; border-collapse:collapse; padding:5px; }
+    th{ background-color:grey; color:white; padding:5px; border:3px solid black; border-collapse:collapse; }
+
+    /* ===== Page base ===== */
+    :root{ --pad: clamp(12px, 4vw, 28px); }
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      padding: var(--pad);
+      background-image: url("https://i.ibb.co/1tLydhdL/201a90d2455916fa002bee91936bcdd5.jpg");
+      background-repeat: repeat;
+      background-size: auto;
+      background-position: top left;
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+          --ease:cubic-bezier(.2,.9,.2,1);
+    }
+
+    .page{
+      max-width: 980px;
+      margin: 0 auto;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.92) 85%, rgba(255,255,255,0) 100%);
+      border-radius: 16px;
+      padding: var(--pad);
+      box-shadow: 0 14px 40px rgba(0,0,0,.12);
+    }
+
+    a { color: rgb(213, 103, 0); }
+    a:visited { color: rgb(127, 62, 0); }
+    a:hover { color: rgb(255, 181, 111); }
+    a:active { color: rgb(255, 255, 255); }
+
+    h1[id], h2[id], h3[id]{ scroll-margin-top: 18px; }
+
+    .TitleWrap{ text-align:center; }
+
+    .Title1{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25em;
+      font-size: clamp(28px, 6vw, 50px);
+      font-family: "Nunito", system-ui, sans-serif;
+      font-weight: 900;
+      background: linear-gradient(90deg, rgb(189,113,0) 0%, rgb(189,113,0) 35%, rgb(255,255,255) 50%, rgb(189,113,0) 65%, rgb(189,113,0) 100%);
+      background-size: 250% 100%;
+      animation: shineWipe 3s linear infinite;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0px 0.12em 0 rgb(0,0,0));
+    }
+
+    @keyframes shineWipe{
+      0%, 15%   { background-position: 0% 50%; }
+      55%       { background-position: 100% 50%; }
+      60%       { background-position: 100% 50%; }
+      60.01%,100% { background-position: 0% 50%; }
+    }
+
+    .titleicon{ width:2em; height:2em; object-fit:contain; }
+
+    .icon{ width:1.2em; height:1.2em; object-fit:contain; transform: translateY(0.15em); }
+    .icon2{ width:1.4em; height:1.4em; object-fit:contain; transform: translateY(0.25em); }
+
+    .command{ display:inline-block; padding:0px 5px; border-radius:5px; background:rgb(192, 192, 192); border:2px solid rgb(122, 122, 122); }
+
+    .img500{ display:block; margin:5px auto; width:100%; max-width:500px; height:auto; border-radius:10px; }
+  
+
+    /* ===== Topbar (same design as index.html) ===== */
+    :root{
+      --tb-bg: rgba(255,255,255,.72);
+      --tb-border: rgba(15,23,42,.12);
+      --tb-text: #0f172a;
+      --tb-muted: rgba(15,23,42,.70);
+      --tb-shadow: 0 10px 28px rgba(2,6,23,.10);
+      --accent1:#4f46e5;
+      --accent2:#f97316;
+      --tb-radius: 999px;
+      --ease:cubic-bezier(.2,.9,.2,1);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --tb-bg: rgba(11,18,32,.72);
+        --tb-border: rgba(255,255,255,.14);
+        
+        --tb-text: #e8eefc;
+        --tb-muted: rgba(232,238,252,.75);
+        --tb-shadow: 0 10px 28px rgba(0,0,0,.35);
+        --accent1:#7c7cff;
+        --accent2:#ff9a5f;
+      }
+    }
+
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      background:
+        linear-gradient(90deg, var(--accent1), var(--accent2)) 0 0/100% 3px no-repeat,
+        var(--tb-bg);
+      border: 1px solid var(--tb-border);
+      border-radius: 16px;
+      overflow: visible;
+    }
+    .dd-menu{
+  z-index: 10000;
+}
+.topbar-inner{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .brand-logo{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      box-shadow: var(--tb-shadow);
+      object-fit: cover;
+      image-rendering: pixelated;
+      background: rgba(255,255,255,.15);
+      flex: 0 0 auto;
+    }
+
+    .brand b{
+      display:block;
+      color: var(--tb-text);
+      font-size: 14px;
+      letter-spacing: .2px;
+      font-weight: 900;
+    }
+    .brand small{
+      display:block;
+      margin-top: 2px;
+      color: var(--tb-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    /* IMPORTANT: override any global <a> colors */
+    .topbar a.tab{
+      color: var(--tb-text) !important;
+      text-decoration:none !important;
+    }
+
+    .tab{
+      position: relative;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: var(--tb-radius);
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.18);
+      box-shadow: var(--tb-shadow);
+      transition: transform .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+    .tab:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent1));
+    }
+    .tab::after{
+      content:"";
+      position:absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 7px;
+      height: 2px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .18s ease;
+      opacity: .9;
+    }
+    .tab.active::after{ transform: scaleX(1); }
+    .tab.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        );
+    }
+
+    /* ===== Dropdown tabs ===== */
+    .dd{ position: relative; }
+
+    /* make <button> look exactly like .tab */
+    .tab-btn{
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255,255,255,.18);
+      color: var(--tb-text);
+      border: 1px solid var(--tb-border);
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tab-btn::-moz-focus-inner{ border:0; padding:0; }
+
+    .caret{
+      display:inline-block;
+      transform: translateY(-.02em);
+      opacity:.85;
+      transition: transform .18s var(--ease), opacity .18s var(--ease);
+    }
+    .dd.open .caret{
+      transform: rotate(180deg) translateY(.08em);
+      opacity: 1;
+    }
+
+    .dd-menu{
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 180px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--tb-border);
+      background: color-mix(in srgb, var(--tb-bg) 92%, transparent);
+      box-shadow: var(--tb-shadow);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px);
+      display: none;
+      z-index: 99999;
+      transform-origin: top right;
+    }
+    .dd.open .dd-menu{ display:block; animation: ddPop .22s var(--ease) both; }
+
+    @keyframes ddPop{
+      0%{ opacity:0; transform: translateY(-10px) scale(.94); }
+      60%{ opacity:1; transform: translateY(0) scale(1.01); }
+      100%{ opacity:1; transform: translateY(0) scale(1); }
+    }
+    .dd.open .dd-item{ animation: ddItem .18s var(--ease) both; }
+    .dd.open .dd-item:nth-child(1){ animation-delay: .06s; }
+    .dd.open .dd-item:nth-child(2){ animation-delay: .10s; }
+    .dd.open .dd-item:nth-child(3){ animation-delay: .14s; }
+
+    @keyframes ddItem{
+      from{ opacity:0; transform: translateY(-6px); }
+      to  { opacity:1; transform: translateY(0); }
+    }
+
+
+    .dd-item{
+      display:block;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.16);
+      box-shadow: var(--tb-shadow);
+      font-weight: 900;
+      white-space: nowrap;
+      color: var(--tb-text) !important;
+      text-decoration: none !important;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .dd-item:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent2));
+    }
+    .dd-item.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        ), rgba(255,255,255,.16);
+    }
+
+    /* small screens: keep menus inside viewport */
+    @media (max-width: 520px){
+      .topbar-inner{ flex-wrap: wrap; }
+      .brand{ min-width: auto; }
+      .dd-menu{
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        min-width: 180px;
+        padding: 10px;
+        border-radius: 16px;
+        border: 1px solid var(--tb-border);
+        background: color-mix(in srgb, var(--tb-bg) 92%, transparent);
+        box-shadow: var(--tb-shadow);
+        -webkit-backdrop-filter: blur(14px);
+        backdrop-filter: blur(14px);
+        display: none;
+        z-index: 99999;
+        transform-origin: top right;
+      }
+    }
+</style>
+</head>
+<body>
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img class="brand-logo" src="https://i.ibb.co/yn9dt1vx/Normal.png" alt="CoinSprite logo">
+          <div>
+            <b>CoinSprite</b>
+            <small>Discord Bot Wikia</small>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Navigation">
+          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
+              Features <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
+            </div>
+          </div>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="index">
+              Index <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+<div class="TitleWrap">
+<span class="Title1">
+        HUNTING
+        <img alt="Hunt icon" class="titleicon" src="https://i.ibb.co/SwgzjXft/SBHunt.png"/>
+</span>
+</div>
+<h3 style="text-align:center;">
+      One of our
+      <span style="color:rgb(255,255,0); -webkit-text-stroke:3px rgb(0,0,0); paint-order:stroke fill;">
+        biggest feature
+      </span>
+      in the bot so far!
+    </h3>
+<hr/>
+<small>Table of contents:</small><br/><b>
+<ol type="1">
+<li><a href="#WhatIsHunting">What is hunting?</a></li>
+<li><a href="#HuntingInfo">Hunting Information</a>
+<ul><li><a href="#Notes">Notes</a></li></ul>
+</li>
+<li><a href="#HuntAttackTypes">Hunt's Attack Types</a></li>
+<li><a href="#PlayerCreatureInfo">Player/Creature Info</a>
+<ul><li><a href="#PlayerInfo">Player</a></li>
+<li><a href="#CreatureInfo">Creature</a></li></ul>
+<li><a href="#Effects">Effects</a></li>
+<li><a href="#GearMisc">Hunting Gear &amp; Misc</a></li>
+</li>
+</ol></b>
+<hr/>
+<h1 id="WhatIsHunting">
+<img alt="" class="icon" src="https://i.ibb.co/gLHfX1zG/3409542.png"/>
+      WHAT IS HUNTING?
+    </h1>
+<ul>
+<li><b>HUNTING</b> lets you send your character out to track down monsters and creatures, giving you a chance to earn coins and other currencies, find loot drops like materials or chests, gain Hunt EXP to level up your Hunt Level, and occasionally encounter stronger enemies with better rewards.</li>
+<li>Your Hunt Level and hunt-related upgrades can increase the coins you get, improve your chances of finding rare loot, and slightly boost the odds of triggering special hunting events.</li>
+<li>There is a cooldown between hunts, so you’ll need to use it strategically and combine it with your other progression commands.</li>
+</ul>
+<h1 id="HuntingInfo">
+<img alt="" class="icon" src="https://i.ibb.co/wrd5N5rt/1504403.png"/>
+      HUNTING INFORMATION.
+    </h1>
+<ul>
+<li>
+        In order to start a <b>HUNTING</b> game. First, you must use command
+        <span class="command"><b>/hunt</b></span>, then the bot will send a message that contains 4 buttons:
+        <span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(255,0,0);font-family:ui-monospace,monospace;color:rgb(255,255,255);">HUNT</span>
+<span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(162,162,162);font-family:ui-monospace,monospace;color:rgb(255,255,255);">Hunt Stat</span>
+<span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(162,162,162);font-family:ui-monospace,monospace;color:rgb(255,255,255);">Equipment</span>
+<span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(162,162,162);font-family:ui-monospace,monospace;color:rgb(255,255,255);">Team</span>
+</li>
+</ul>
+<img alt="Hunt buttons" class="img500" loading="lazy" src="https://i.ibb.co/9mKBstz2/Screenshot-2025-12-25-181557.png"/>
+<ul>
+<li>
+        After that just press the
+        <span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(255,0,0);font-family:ui-monospace,monospace;color:rgb(255,255,255);">HUNT</span>
+        and then you will see an <b>Idle Message [cooldown]</b> of 3s before the <b>HUNTING</b> game starts.
+      </li>
+</ul>
+<img alt="Idle message" class="img500" loading="lazy" src="https://i.ibb.co/ymp6t7Kt/Screenshot-2025-12-25-204839.png"/>
+<ul>
+<li>
+        Finally after 3s cooldown ends, the <b>Hunting Message</b> will appear. This is where you will start the
+        <b>PVP between Creatures and Player</b>
+</li>
+</ul>
+<img alt="Hunting message" class="img500" loading="lazy" src="https://i.ibb.co/MyzgZhQK/Screenshot-2025-12-25-204848.png"/>
+<p>The message will contains 3 stuff: <b>Battle Canva, Action Panel and Action Message.</b></p>
+<ul>
+<li><b>Battle canva:</b> This is an image that is generated by Bot, it will show the creatures, user and your army/pet. Each will be inside a card, each each will have a health bar, level info, image and status symbol [when active].</li>
+<li><b>Action panel:</b> This is a selection panel that allows player to choose which creature to attack. You only have 2 actions per turn so choose wisely.</li>
+<li><b>Action message:</b> This is a message place where it will show what had happened, show either player attack action or creature attack actions. It even show the status effect when u have.</li>
+</ul>
+<h2 id="Notes">
+<img alt="" class="icon" src="https://i.ibb.co/gZNqnqHg/10270677.png"/>
+      NOTES:
+    </h2>
+<ul>
+<li>If your <b>HUNTING</b> game was left idle for 30 seconds, the bot will automatically make the hunt fails.</li>
+</ul>
+<img alt="Idle fail" class="img500" loading="lazy" src="https://i.ibb.co/XZMnvLFr/Screenshot-2025-12-25-214118.png"/>
+<ul>
+<li>If you don't have any tool/gear used in your <b>EQUIPMENT</b>, the bot will automatically equip <b>Fist</b> for you. Means you will use your barehands to attack them, <span style="color:red;"><b>but it is not recommended!</b></span></li>
+<li>Also don't try to use many commands and do as many <b>HUNTING</b> game as you can because it won't work ;]</li>
+</ul>
+<h1 id="HuntAttackTypes">
+<img alt="" class="icon" src="https://i.ibb.co/Qvxg5vHJ/8745776.png"/>
+      HUNT's ATTACK TYPES
+    </h1>
+<p>There're currently 3 types of attacks: <b>Singular, AOE [Area of Effect]</b> and <b>Critical Attack.</b></p>
+<ul>
+<li><b>Singular:</b> This attack only allow either player or creature to target and deal damage to <b>1 enemy</b>.</li>
+<li><b>AOE:</b> This attack will affect all player and allies or creatures. The one that being attacked with AOE will receive <b>100% damages<img class="icon2" src="https://i.ibb.co/Kc9cdZ7q/Damage.jpg"/></b> while the others receive <b>45% damages<img class="icon2" src="https://i.ibb.co/Kc9cdZ7q/Damage.jpg"/></b> only.</li>
+<li><b>Critical Attack:</b> This attack can be used in either <b>Singular or AOE</b>, it only has 15% chance to occurs a <b>Critical Attack</b>. A critical attack will deal 25% more damages<img class="icon2" src="https://i.ibb.co/Kc9cdZ7q/Damage.jpg"/> than the original <i>[means +25% damages<img class="icon2" src="https://i.ibb.co/Kc9cdZ7q/Damage.jpg"/>]</i>. But for AOE, the one being targetted will only gain 25% bonus damages, while others still receive only 45% damages<img class="icon2" src="https://i.ibb.co/Kc9cdZ7q/Damage.jpg"/>.</li>
+</ul>
+<h1 id="PlayerCreatureInfo">
+<img alt="" class="icon" src="https://i.ibb.co/NgSrQx5R/10539035.png"/>
+      PLAYER/CREATURE HUNTING INFORMATION
+    </h1>
+<h2 id="PlayerInfo">PLAYER STAT INFORMATION:</h2>
+<p>
+      Player stat can be accessed by pressing
+      <span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(162,162,162);font-family:ui-monospace,monospace;color:rgb(255,255,255);">
+        Hunt Stat
+      </span>
+      button. Upon pressing, the bot will edit the message into this:
+    </p>
+<img alt="Player stat" class="img500" loading="lazy" src="https://i.ibb.co/2Y8pTYBp/Screenshot-2025-12-25-222441.png"/>
+<p>The message includes 3 info: <b>Player Level + Progress Bar, Health, Defense.</b></p>
+<ul>
+<li>Player progress bar will have their own set equation for XP requirement per level:
+      <p style="text-align: center; font-size: 20px; font-weight:1000;"><code style="background-color: rgb(0,0,0); color:white; padding:2px 6px; border-radius:6px;">100 + 50 * {level}</code></p></li>
+<li>Player level is capped at level 100. Means when reaching level 100, player cannot be able to proceed.</li>
+<li>For every time player leveled up, player will gain <b>25 more Health<img class="icon2" src="https://i.ibb.co/QjxgM5D8/SBHeart.png"/></b>.</li>
+<li><b>FACT:</b> total Hunt XP needed to reach level 100 is <b>257,500 XP<img class="icon2" src="https://i.ibb.co/wFwQs2JY/XP.png"/></b> and total health is <b>2600 Health<img alt="" class="icon2" src="https://i.ibb.co/QjxgM5D8/SBHeart.png"/></b></li>
+</ul>
+<h2 id="CreatureInfo">CREATURE STAT INFORMATION:</h2>
+<p>Each creatures will have their own health, status, and attacks.</p>
+<ul><li>For every level the creature gain, their health, damage, coins reward, and hunt reward will increase by 50%, 25%, 10%, and 15% respectively.</li>
+<li>Each creature has a level range from 1 - 12, means level 12 is max level.</li></ul>
+<p>But player can only counter a specific creature level and rarity base on their <b>Hunt Level:</b></p>
+<table class="center-table" style="font-size: 20px;">
+<tr>
+<th>Hunt Level</th>
+<th>Creature Level</th>
+<th>Highest Rarity</th>
+</tr>
+<tr>
+<td>0 - 10</td>
+<td>1</td>
+<td class="rare">RARE</td>
+</tr>
+<tr>
+<td>11 - 20</td>
+<td>1 - 3</td>
+<td class="epic">EPIC</td>
+</tr>
+<tr>
+<td>21 - 35</td>
+<td>1 - 5</td>
+<td class="legendary">LEGENDARY</td>
+</tr>
+<tr>
+<td>36 - 50</td>
+<td>1 - 7</td>
+<td class="mythical">MYTHICAL</td>
+</tr>
+<tr>
+<td>51 - 80</td>
+<td>1 - 9</td>
+<td class="secret" rowspan="2">SECRET</td>
+</tr>
+<tr>
+<td>80 - 100</td>
+<td>1 - 12</td>
+</tr>
+</table>
+<h1 id="Effects">
+<img alt="" class="icon" src="https://i.ibb.co/LDFM19fW/2645909.png"/>
+      EFFECTS
+    </h1>
+<p>There's currently only 1 effect in hunting feature:</p>
+<!-- Simple status card section -->
+<div class="status-wrap">
+<div class="status-card">
+<img alt="Poison icon" class="status-icon" src="https://i.ibb.co/q3Y4BkN3/SBPoison.png"/>
+<div>
+<div class="status-title">POISON</div>
+<ul class="status-list">
+<li>A status effect, it will decrease your health overtime. But never reach 0.</li>
+<li>Poison will decrease user health by {set}% per round, base on each <b>creature setting.</b></li>
+</ul>
+</div>
+</div>
+</div>
+<h1 id="GearMisc">
+<img alt="" class="icon" src="https://i.ibb.co/C5F12RCJ/2982488.png"/>
+      HUNTING GEAR &amp; MISC
+    </h1>
+<p>In hunting game, not all gear or misc items are elligible to use for hunting. Player can only use gear or misc items that are tagged with <span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(255, 117, 117);font-family:ui-monospace,monospace;color:rgb(255,255,255);">HUNTING</span>
+</p>
+<p>In order to change your gear or equipment, just press <span style="display:inline-block;padding:1px 5px;border-radius:5px;background:rgb(162,162,162);font-family:ui-monospace,monospace;color:rgb(255,255,255);">Equipment</span> button and this message will appear. It will contain 2 selection panel for you to choose, one is to select a Gear/Weapon and one is to select a Misc item.
+</p> <img alt="Player stat" class="img500" loading="lazy" src="https://i.ibb.co/ZptrKF6F/Screenshot-2025-12-26-215454.png"/>
+<p>Please note that all gear/weapon has <b>Durability Stat</b> so besure to check the gear durability before using, otherwise you may break a gear/weapon if the durability is very low.</p>
+<h1 style="font-size: clamp(10px, 6vw, 20px); text-align:center;">- JAG DOCUMENT -</h1>
+</div>
+<!--JAVA SCRIPT -->
+<script>
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (!el) return;
+
+        e.preventDefault();
+
+        const offset = 16;
+        const y = el.getBoundingClientRect().top + window.scrollY - offset;
+        const maxY = document.documentElement.scrollHeight - window.innerHeight;
+
+        window.scrollTo({
+          top: Math.min(y, maxY),
+          behavior: 'smooth'
+        });
+
+        try { history.replaceState(null, '', '#' + id); } catch (_) {}
+      });
+    });
+    (() => {
+      const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      const isHunting = file.includes('hunting');
+      const isCreature = file.includes('creature');
+      const isHome = !isHunting && !isCreature;
+
+      // Force navigation to change the *top page* (Google Sites embeds may iframe this HTML).
+      // We do this by setting target="_top" on the navigation links.
+      const forceTopNav = (selector) => {
+        document.querySelectorAll(selector).forEach(a => a.setAttribute('target', '_top'));
+      };
+
+      forceTopNav('a.tab[data-page="home"]');
+      forceTopNav('a.dd-item[data-page="hunting"]');
+      forceTopNav('a.dd-item[data-page="creature"]');
+
+
+      // Active styles
+      const homeTab = document.querySelector('.tab[data-page="home"]');
+      const featuresBtn = document.querySelector('.tab[data-page="features"]');
+      const indexBtn = document.querySelector('.tab[data-page="index"]');
+      const huntingItem = document.querySelector('.dd-item[data-page="hunting"]');
+      const creatureItem = document.querySelector('.dd-item[data-page="creature"]');
+
+      if (isHome && homeTab) homeTab.classList.add('active');
+      if (isHunting){
+        if (featuresBtn) featuresBtn.classList.add('active');
+        if (huntingItem) huntingItem.classList.add('active');
+      }
+      if (isCreature){
+        if (indexBtn) indexBtn.classList.add('active');
+        if (creatureItem) creatureItem.classList.add('active');
+      }
+
+      // Dropdown behavior
+      const dropdowns = Array.from(document.querySelectorAll('[data-dd]'));
+
+      const closeAll = (except = null) => {
+        dropdowns.forEach(dd => {
+          if (dd === except) return;
+          dd.classList.remove('open');
+          const btn = dd.querySelector('[data-dd-btn]');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      };
+
+      dropdowns.forEach(dd => {
+        const btn = dd.querySelector('[data-dd-btn]');
+        const menu = dd.querySelector('[data-dd-menu]');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const willOpen = !dd.classList.contains('open');
+          closeAll(dd);
+          dd.classList.toggle('open', willOpen);
+          btn.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        // Click inside menu closes it (after navigation)
+        menu.addEventListener('click', () => closeAll());
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-dd]')) closeAll();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+<script>
+        function changeTab(event, page) {
+            event.preventDefault();
+            let tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            if (page === 'home') {
+                window.location.href = 'https://sites.google.com/view/coinsprite/home';
+            } else if (page === 'hunting') {
+                window.location.href = 'https://sites.google.com/view/coinsprite/hunting';
+            } else if (page === 'creature') {
+                window.location.href = 'https://sites.google.com/view/coinsprite/creature';
+            }
+        }
+        </script></body>
+</html>

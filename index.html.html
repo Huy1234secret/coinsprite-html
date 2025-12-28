@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+
+  <!-- Smooth font (matches your creature page vibe) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+  <base target="_self" />
+  <title>CoinSprite • Home</title>
+
+  <style>
+    :root{
+      --pad: clamp(12px, 4vw, 28px);
+      --pageW: 980px;
+      --ease: cubic-bezier(.2,.9,.2,1);
+
+      /* creature.html background texture */
+      --bgImg: url("https://i.ibb.co/1tLydhdL/201a90d2455916fa002bee91936bcdd5.jpg");
+
+      /* topbar theme */
+      --tb-bg: rgba(255,255,255,.72);
+      --tb-border: rgba(15,23,42,.12);
+      --tb-text: #0f172a;
+      --tb-muted: rgba(15,23,42,.70);
+      --tb-shadow: 0 10px 28px rgba(2,6,23,.10);
+      --accent1:#4f46e5;
+      --accent2:#f97316;
+      --radius: 999px;
+      --tb-radius: 999px;
+
+      /* page (content stays WHITE even in dark mode) */
+      --text:#0f172a;
+      --muted:#475569;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 14px 40px rgba(0,0,0,.12);
+      --card: rgba(255,255,255,.92);
+      --card2: rgba(255,255,255,1);
+    }
+
+    @media (prefers-color-scheme: dark){
+      :root{
+        --tb-bg: rgba(11,18,32,.72);
+        --tb-border: rgba(255,255,255,.14);
+        --tb-text: #e8eefc;
+        --tb-muted: rgba(232,238,252,.75);
+        --tb-shadow: 0 10px 28px rgba(0,0,0,.35);
+        --accent1:#7c7cff;
+        --accent2:#ff9a5f;
+      }
+    }
+
+    *{ box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+    html{ scroll-behavior:smooth; }
+    body{
+      margin:0;
+      padding: var(--pad);
+      background-image: var(--bgImg);
+      background-repeat: repeat;
+      background-size: auto;
+      background-position: top left;
+      font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Same “page size + fading texture at bottom” as your creature page */
+    .page{
+      max-width: var(--pageW);
+      margin: 0 auto;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.92) 0%,
+        rgba(255,255,255,0.92) 85%,
+        rgba(255,255,255,0) 100%
+      );
+      border-radius: 16px;
+      padding: var(--pad);
+      box-shadow: var(--shadow);
+    }
+/* ===== Topbar (2 tabs) ===== */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      isolation: isolate;
+      backdrop-filter: blur(14px);
+      /* gradient line is part of the background so it clips perfectly to rounded corners */
+      background:
+        linear-gradient(90deg, var(--accent1), var(--accent2)) 0 0/100% 3px no-repeat,
+        var(--tb-bg);
+      border: 1px solid var(--tb-border);
+      border-radius: 16px;
+      overflow: visible; /* allow dropdown to escape the bar */
+    }
+
+.dd-menu{
+  z-index: 10000;
+}
+
+    .topbar-inner{
+      max-width: var(--pageW);
+      margin: 0 auto;
+      padding: 12px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .brand-logo{
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      box-shadow: var(--tb-shadow);
+      object-fit: cover;
+      image-rendering: pixelated;
+      background: rgba(255,255,255,.15);
+      flex: 0 0 auto;
+    }
+
+    .brand b{
+      display:block;
+      color: var(--tb-text);
+      font-size: 14px;
+      letter-spacing: .2px;
+      font-weight: 900;
+    }
+    .brand small{
+      display:block;
+      margin-top: 2px;
+      color: var(--tb-muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .nav{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+    }
+
+    /* IMPORTANT: override any global <a> colors */
+    .topbar a.tab{
+      color: var(--tb-text) !important;
+      text-decoration:none !important;
+    }
+
+    .tab{
+      position: relative;
+      font-weight: 900;
+      font-size: 14px;
+      padding: 10px 12px;
+      border-radius: var(--tb-radius);
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.18);
+      box-shadow: var(--tb-shadow);
+      transition: transform .12s ease, border-color .12s ease;
+      white-space: nowrap;
+    }
+    .tab:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent1));
+    }
+    .tab::after{
+      content:"";
+      position:absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 7px;
+      height: 2px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .18s ease;
+      opacity: .9;
+    }
+    .tab.active::after{ transform: scaleX(1); }
+    .tab.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        );
+    }
+
+    /* ===== Dropdown tabs ===== */
+    .dd{ position: relative; }
+
+    /* make <button> look exactly like .tab */
+    .tab-btn{
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255,255,255,.18);
+      color: var(--tb-text);
+      border: 1px solid var(--tb-border);
+      font: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tab-btn::-moz-focus-inner{ border:0; padding:0; }
+
+    .caret{
+      display:inline-block;
+      transform: translateY(-.02em);
+      opacity:.85;
+      transition: transform .18s var(--ease);
+    }
+
+    .dd-menu{
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      min-width: 180px;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid var(--tb-border);
+      background: color-mix(in srgb, var(--tb-bg) 92%, transparent);
+      box-shadow: var(--tb-shadow);
+      backdrop-filter: blur(14px);
+      z-index: 10000;
+
+      /* animate open/close (instead of display:none which can't animate) */
+      opacity: 0;
+      transform: translateY(-8px) scale(.98);
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity .16s var(--ease),
+        transform .16s var(--ease),
+        visibility 0s linear .16s;
+    }
+
+    .dd.open .dd-menu{
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      visibility: visible;
+      pointer-events: auto;
+      transition:
+        opacity .16s var(--ease),
+        transform .16s var(--ease),
+        visibility 0s;
+    }
+
+    .dd.open .caret{ transform: rotate(180deg) translateY(-.02em); }
+
+    .dd.open .dd-item{ animation: itemIn .18s var(--ease) both; }
+    @keyframes itemIn{
+      from{ opacity:0; transform: translateY(-6px); }
+      to{ opacity:1; transform: translateY(0); }
+    }
+
+    .dd-item{
+      display:block;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--tb-border);
+      background: rgba(255,255,255,.16);
+      box-shadow: var(--tb-shadow);
+      font-weight: 900;
+      white-space: nowrap;
+      color: var(--tb-text) !important;
+      text-decoration: none !important;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .dd-item:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--tb-border) 60%, var(--accent2));
+    }
+    .dd-item.active{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border));
+      background:
+        linear-gradient(135deg,
+          color-mix(in srgb, var(--accent1) 16%, transparent),
+          color-mix(in srgb, var(--accent2) 12%, transparent)
+        ), rgba(255,255,255,.16);
+    }
+
+    /* small screens: keep menus inside viewport */
+    @media (max-width: 520px){
+      .topbar-inner{ flex-wrap: wrap; }
+      .brand{ min-width: auto; }
+      .dd-menu{ right: 0; left: auto; }
+    }
+
+    /* ===== Home content ===== */
+    .content{ padding-top: 16px; }
+
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 18px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: 0 10px 28px rgba(0,0,0,.10);
+    }
+    .hero h1{
+      margin:0 0 8px;
+      font-size: clamp(26px, 4.8vw, 44px);
+      letter-spacing: .5px;
+      line-height: 1.05;
+    }
+    .hero p{
+      margin:0;
+      color: var(--muted);
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .hero-right{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+    }
+    .hero-big-logo{
+      width: 86px;
+      height: 86px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--tb-shadow);
+      object-fit: cover;
+      image-rendering: pixelated;
+      background: rgba(255,255,255,.15);
+    }
+
+    .btns{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 11px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      color: var(--text);
+      text-decoration:none;
+      font-weight: 900;
+      box-shadow: 0 10px 20px rgba(0,0,0,.08);
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--border) 60%, var(--accent2)); }
+    .btn.primary{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--border));
+      background: linear-gradient(135deg,
+        color-mix(in srgb, var(--accent1) 18%, transparent),
+        color-mix(in srgb, var(--accent2) 14%, transparent)
+      ), var(--card2);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (max-width: 860px){ .grid{ grid-template-columns: 1fr; } }
+
+    .card{
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      padding: 14px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+    }
+    .card h3{
+      margin:0 0 6px;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .card p{
+      margin:0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .kvs{
+      display:grid;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .kv{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      font-weight: 900;
+    }
+    .kv span:last-child{ color: var(--muted); font-weight: 900; }
+
+    .footer{
+      margin-top: 18px;
+      text-align:center;
+      color: var(--muted);
+      font-weight: 800;
+      font-size: 12px;
+      padding-bottom: 6px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <img class="brand-logo" src="https://i.ibb.co/yn9dt1vx/Normal.png" alt="CoinSprite logo">
+          <div>
+            <b>CoinSprite</b>
+            <small>Discord Bot Wikia</small>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Navigation">
+          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
+              Features <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
+            </div>
+          </div>
+
+          <div class="dd" data-dd>
+            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="index">
+              Index <span class="caret" aria-hidden="true">▾</span>
+            </button>
+            <div class="dd-menu" role="menu" data-dd-menu>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Home content -->
+    <main class="content">
+      <section class="hero">
+        <div>
+          <h1>Welcome 👋</h1>
+          <p>Quick hub page for CoinSprite: info, links, and shortcuts.</p>
+
+          <div class="btns">
+            <a class="btn primary" href="creature.html">Open Creatures →</a>
+            <a class="btn" href="#about">About</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <img class="hero-big-logo" src="https://i.ibb.co/yn9dt1vx/Normal.png" alt="" aria-hidden="true">
+        </div>
+      </section>
+
+      <section class="grid" id="about">
+        <div class="card">
+          <h3>Bot Information</h3>
+          <p>Main details about your Discord bot.</p>
+
+          <div class="kvs">
+            <div class="kv"><span>Creator</span><span>VietnamPH</span></div>
+            <div class="kv"><span>Category</span><span>Economy • Simulation • RPG</span></div>
+            <div class="kv"><span>Version</span><span>1.0.12</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>What’s inside?</h3>
+          <p>Use this site as a wiki for your bot: creatures, drops, stats, and more.</p>
+          <div class="kvs">
+            <div class="kv"><span>Creatures</span><span>List + search</span></div>
+            <div class="kv"><span>Drops</span><span>Materials + loot</span></div>
+            <div class="kv"><span>Rarities</span><span>Common → Secret</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Quick Tips</h3>
+          <p>Keep your website stable on Surge.</p>
+          <div class="kvs">
+            <div class="kv"><span>Filenames</span><span>index.html, creature.html</span></div>
+            <div class="kv"><span>Update</span><span>Run surge again</span></div>
+            <div class="kv"><span>Refresh</span><span>Ctrl+F5 (cache)</span></div>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer">CoinSprite • Home</div>
+    </main>
+  </div>
+
+    <script>
+    (() => {
+      const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      const isHunting = file.includes('hunting');
+      const isCreature = file.includes('creature');
+      const isHome = !isHunting && !isCreature;
+
+      // Active styles
+      const homeTab = document.querySelector('.tab[data-page="home"]');
+      const featuresBtn = document.querySelector('.tab[data-page="features"]');
+      const indexBtn = document.querySelector('.tab[data-page="index"]');
+      const huntingItem = document.querySelector('.dd-item[data-page="hunting"]');
+      const creatureItem = document.querySelector('.dd-item[data-page="creature"]');
+
+      if (isHome && homeTab) homeTab.classList.add('active');
+      if (isHunting){
+        if (featuresBtn) featuresBtn.classList.add('active');
+        if (huntingItem) huntingItem.classList.add('active');
+      }
+      if (isCreature){
+        if (indexBtn) indexBtn.classList.add('active');
+        if (creatureItem) creatureItem.classList.add('active');
+      }
+z
+      // Dropdown behavior
+      const dropdowns = Array.from(document.querySelectorAll('[data-dd]'));
+
+      const closeAll = (except = null) => {
+        dropdowns.forEach(dd => {
+          if (dd === except) return;
+          dd.classList.remove('open');
+          const btn = dd.querySelector('[data-dd-btn]');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        });
+      };
+
+      dropdowns.forEach(dd => {
+        const btn = dd.querySelector('[data-dd-btn]');
+        const menu = dd.querySelector('[data-dd-menu]');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const willOpen = !dd.classList.contains('open');
+          closeAll(dd);
+          dd.classList.toggle('open', willOpen);
+          btn.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        // Click inside menu closes it (after navigation)
+        menu.addEventListener('click', () => closeAll());
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('[data-dd]')) closeAll();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAll();
+      });
+    })();
+  </script>
+</body>
+</html>
