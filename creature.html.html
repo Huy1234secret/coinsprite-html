@@ -2,13 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>CoinSprite • Creature Index</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
-  <base target="_self" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Item Search</title>
 
   <style>
           :root{
@@ -151,6 +146,43 @@
         color-mix(in srgb, var(--accent2) 12%, transparent)
       );
   }
+    :root{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:rgba(15,23,42,.12);
+      --shadow:0 12px 30px rgba(2,6,23,.08);
+      --radius:16px;
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      padding:252px;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .wrap{
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .title{
+      font-weight: 900;
+      font-size: 26px;
+      margin: 0 0 12px;
+      letter-spacing: .2px;
+    }
+
+    .searchbar{
+      position: relative;
+      top: 0;
+      z-index: 10;
+      background: var(--bg);
+      padding: 10px 0 14px;
+    }
+
     .input{
       width: 100%;
       padding: 14px 16px;
@@ -300,13 +332,12 @@
   isolation: isolate;
   -webkit-backdrop-filter: blur(14px);
   backdrop-filter: blur(14px);
-  background:
-    linear-gradient(90deg, var(--accent1), var(--accent2)) 0 0/100% 3px no-repeat,
-    var(--tb-bg);
+  background: var(--tb-bg);
       border: 1px solid var(--tb-border);
   border-radius: 16px;
   overflow: visible; /* allow dropdowns */
 }
+.topbar::before{ content:none; }
 
 .topbar-inner{
       max-width: 980px;
