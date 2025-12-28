@@ -2,29 +2,6 @@
 
 <html lang="en">
 <head>
-    <style>
-      .tab {
-        padding: 10px 15px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        background-color: rgba(255, 255, 255, 0.6);
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-        margin-right: 5px;
-      }
-
-      .tab:hover {
-        background-color: rgba(255, 255, 255, 0.8);
-      }
-
-      .tab.active {
-        background-color: #4f46e5;
-        color: white;
-        border: 1px solid #4f46e5;
-      }
-    </style>
-    
 <meta charset="utf-8"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <!-- (Optional) smooth font -->
@@ -433,14 +410,14 @@
         </div>
 
         <nav class="nav" aria-label="Navigation">
-          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
+          <a class="tab" href="index.html" data-page="home">Home</a>
 
           <div class="dd" data-dd>
             <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
               Features <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
+              <a class="dd-item" role="menuitem" href="hunting.html.html" data-page="hunting">Hunting</a>
             </div>
           </div>
 
@@ -449,7 +426,7 @@
               Index <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+              <a class="dd-item" role="menuitem" href="creature.html.html" data-page="creature">Creature</a>
             </div>
           </div>
         </nav>
@@ -671,17 +648,6 @@
       const isCreature = file.includes('creature') || url.includes('creature');
       const isHome = !isHunting && !isCreature;
 
-      // Force navigation to change the *top page* (Google Sites embeds may iframe this HTML).
-      // We do this by setting target="_top" on the navigation links.
-      const forceTopNav = (selector) => {
-        document.querySelectorAll(selector).forEach(a => a.setAttribute('target', '_top'));
-      };
-
-      forceTopNav('a.tab[data-page="home"]');
-      forceTopNav('a.dd-item[data-page="hunting"]');
-      forceTopNav('a.dd-item[data-page="creature"]');
-
-
       // Active styles
       const homeTab = document.querySelector('.tab[data-page="home"]');
       const featuresBtn = document.querySelector('.tab[data-page="features"]');
@@ -737,19 +703,5 @@
       });
     })();
   </script>
-<script>
-        function changeTab(event, page) {
-            event.preventDefault();
-            let tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            event.target.classList.add('active');
-            if (page === 'home') {
-                window.location.href = 'https://sites.google.com/view/coinsprite/home';
-            } else if (page === 'hunting') {
-                window.location.href = 'https://sites.google.com/view/coinsprite/hunting';
-            } else if (page === 'creature') {
-                window.location.href = 'https://sites.google.com/view/coinsprite/creature';
-            }
-        }
-        </script></body>
+</body>
 </html>
