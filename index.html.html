@@ -521,8 +521,9 @@
     <script>
     (() => {
       const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
-      const isHunting = file.includes('hunting');
-      const isCreature = file.includes('creature');
+      const url = location.href.toLowerCase();
+      const isHunting = file.includes('hunting') || url.includes('hunting');
+      const isCreature = file.includes('creature') || url.includes('creature');
       const isHome = !isHunting && !isCreature;
 
       // Active styles
@@ -541,7 +542,6 @@
         if (indexBtn) indexBtn.classList.add('active');
         if (creatureItem) creatureItem.classList.add('active');
       }
-z
       // Dropdown behavior
       const dropdowns = Array.from(document.querySelectorAll('[data-dd]'));
 
