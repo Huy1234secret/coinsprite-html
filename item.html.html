@@ -577,10 +577,13 @@
     return `${Number(val)} coins`;
   }
   function formatDamage(dmg){
-    const min = dmg?.min; const max = dmg?.max;
-    if(isFinite(min) && isFinite(max)) return `${min} - ${max}`;
-    if(isFinite(min)) return `${min}`;
-    if(isFinite(max)) return `${max}`;
+    const isNum = (val) => typeof val === "number" && Number.isFinite(val);
+    const min = isNum(dmg?.min) ? dmg.min : null;
+    const max = isNum(dmg?.max) ? dmg.max : null;
+
+    if(isNum(min) && isNum(max)) return `${min} - ${max}`;
+    if(isNum(min)) return `${min}`;
+    if(isNum(max)) return `${max}`;
     return null;
   }
   function formatDurability(val){
