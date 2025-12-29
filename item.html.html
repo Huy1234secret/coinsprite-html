@@ -295,13 +295,14 @@
     .detailTop{ display:flex; gap: 16px; align-items:flex-start; flex-wrap: wrap; padding-right: 44px; }
     .detailImgBox{ width: 240px; min-width: 220px; border: 1px solid var(--border); border-radius: 14px; background: rgba(2,6,23,.03); padding: 10px; display:flex; align-items:center; justify-content:center; }
     .detailImg{ width: 100%; height: 220px; object-fit: contain; image-rendering: pixelated; }
-    .detailMeta{ flex: 1 1 280px; display:flex; flex-direction:column; gap: 10px; }
+    .detailMeta{ flex: 1 1 320px; display:flex; flex-direction:column; gap: 10px; align-items:flex-start; }
     .detailName{ margin:0; font-size: 26px; font-weight: 900; line-height: 1.2; }
-    .detailTags{ display:flex; gap:6px; flex-wrap: wrap; }
-    .detailInfo{ display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); grid-auto-flow: dense; gap: 10px; margin-top: 6px; }
-    .infoRow{ border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; background: rgba(2,6,23,.02); font-weight: 800; font-size: 14px; }
+    .detailTags{ display:flex; gap:6px; flex-wrap: wrap; align-items:center; }
+    .detailInfo{ display:flex; flex-wrap:wrap; gap: 8px; justify-content:flex-end; margin-left:auto; margin-top: 6px; }
+    .infoRow{ border: 1px solid var(--border); border-radius: 14px; padding: 8px 10px; background: rgba(2,6,23,.02); font-weight: 800; font-size: 14px; width: fit-content; min-width: var(--info-min, 140px); }
     .infoRow .label{ display:block; font-size: 12px; color: var(--muted); font-weight: 800; margin-bottom: 4px; }
-    .detailText{ margin-top: 12px; display:flex; flex-direction:column; gap: 10px; }
+    .detailText{ margin-top: 12px; display:grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .detailNote{ border: 1px solid var(--border); border-radius: 14px; padding: 10px 12px; background: rgba(2,6,23,.02); box-shadow: 0 8px 18px rgba(2,6,23,.06); }
     .detailText h3{ margin:0; font-size: 14px; color: var(--muted); letter-spacing: .3px; }
     .detailText p{ margin:4px 0 0; font-size: 14px; font-weight: 800; }
 
@@ -437,8 +438,8 @@
             </div>
           </div>
           <div class="detailText">
-            <div id="detailObtainment"></div>
-            <div id="detailUsage"></div>
+            <div id="detailObtainment" class="detailNote"></div>
+            <div id="detailUsage" class="detailNote"></div>
           </div>
         </div>
       </div>
@@ -616,8 +617,8 @@
 
       const available = detailInfo.clientWidth || 0;
       const idealCols = Math.max(1, Math.floor(available / 190));
-      const minSize = Math.max(160, Math.min(240, Math.floor(available / idealCols) - 8));
-      detailInfo.style.gridTemplateColumns = `repeat(auto-fit, minmax(${minSize}px, 1fr))`;
+      const minSize = Math.max(140, Math.min(220, Math.floor(available / idealCols) - 8));
+      detailInfo.style.setProperty("--info-min", `${minSize}px`);
 
       cards.forEach(card => {
         const content = card.textContent.trim();
@@ -703,10 +704,6 @@
 
     const infoLines = [];
     if(item.id) infoLines.push(`<div class="infoRow"><span class="label">id:</span>${escapeHTML(item.id)}</div>`);
-    if(item.name) infoLines.push(`<div class="infoRow"><span class="label">name:</span>${escapeHTML(item.name)}</div>`);
-    if(item.image) infoLines.push(`<div class="infoRow"><span class="label">image:</span><a href="${escapeHTML(item.image)}" target="_blank" rel="noreferrer">${escapeHTML(item.image)}</a></div>`);
-    if(item.rarity) infoLines.push(`<div class="infoRow"><span class="label">rarity:</span><span class="${rarityClass(item.rarity)}">${escapeHTML(item.rarity)}</span></div>`);
-    if(item.type) infoLines.push(`<div class="infoRow"><span class="label">type:</span>${escapeHTML(item.type)}</div>`);
     if(item.value !== null && item.value !== undefined) infoLines.push(`<div class="infoRow"><span class="label">value:</span>${escapeHTML(String(item.value))}</div>`);
     if(item.hasSellPrice) infoLines.push(`<div class="infoRow"><span class="label">sellPrice:</span>${escapeHTML(formatSellPrice(item.sellPrice))}</div>`);
     if(item.tradable !== undefined) infoLines.push(`<div class="infoRow"><span class="label">tradable:</span>${item.tradable ? "Yes" : "No"}</div>`);
@@ -720,6 +717,8 @@
 
     detailObtainment.innerHTML = item.obtainment ? `<h3>Obtainment:</h3><p>${escapeHTML(item.obtainment)}</p>` : "";
     detailUsage.innerHTML = item.usage ? `<h3>Usage:</h3><p>${escapeHTML(item.usage)}</p>` : "";
+    detailObtainment.style.display = item.obtainment ? "block" : "none";
+    detailUsage.style.display = item.usage ? "block" : "none";
 
     detailWrap.hidden = false;
     requestAnimationFrame(() => detailWrap.classList.add("open"));
