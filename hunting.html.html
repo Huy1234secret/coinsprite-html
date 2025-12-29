@@ -653,6 +653,19 @@
       const isCreature = page ? page === 'creature' : detectCreature;
       const isHome = page ? page === 'home' : (!isHunting && !isCreature);
 
+      const navigateSameTab = (href) => {
+        if (href) window.location.href = href;
+      };
+
+      const navLinks = Array.from(document.querySelectorAll('.nav a, .dd-menu .dd-item'));
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+          e.preventDefault();
+          navigateSameTab(link.href);
+        });
+      });
+
       // Active styles
       const homeTab = document.querySelector('.tab[data-page="home"]');
       const featuresBtn = document.querySelector('.tab[data-page="features"]');
@@ -688,6 +701,15 @@
         if (!btn || !menu) return;
 
         btn.addEventListener('click', (e) => {
+          const firstLink = menu.querySelector('.dd-item');
+          const targetHref = firstLink ? firstLink.href : null;
+
+          if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0 && targetHref){
+            e.preventDefault();
+            navigateSameTab(targetHref);
+            return;
+          }
+
           e.preventDefault();
           const willOpen = !dd.classList.contains('open');
           closeAll(dd);
