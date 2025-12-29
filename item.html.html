@@ -10,12 +10,12 @@
   <style>
     :root{
       --pad: clamp(12px, 4vw, 28px);
-      --bg: #f8fafc;
+      --bg: #ffffff;
       --card: #ffffff;
       --border: rgba(15,23,42,.12);
       --muted: #64748b;
       --text: #0f172a;
-      --shadow: 0 16px 36px rgba(2,6,23,.08);
+      --shadow: 0 12px 30px rgba(2,6,23,.08);
       --accent1: #4f46e5;
       --accent2: #f97316;
       --tb-bg: rgba(255,255,255,.82);
@@ -24,6 +24,7 @@
       --tb-muted: rgba(15,23,42,.70);
       --tb-shadow: 0 10px 28px rgba(2,6,23,.10);
       --tb-radius: 999px;
+      --radius:16px;
       --ease: cubic-bezier(.2,.9,.2,1);
     }
     @media (prefers-color-scheme: dark){
@@ -50,14 +51,15 @@
       background-image: url("https://i.ibb.co/1tLydhdL/201a90d2455916fa002bee91936bcdd5.jpg");
       background-repeat: repeat;
       background-size: auto;
+      background-position: top left;
       font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
     }
 
     .page{
-      max-width: 1100px;
+      max-width: 980px;
       margin: 0 auto;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.94) 0%, rgba(255,255,255,0.94) 85%, rgba(255,255,255,0) 100%);
+      background: linear-gradient(to bottom, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.92) 85%, rgba(255,255,255,0) 100%);
       border-radius: 16px;
       padding: var(--pad);
       box-shadow: 0 14px 40px rgba(0,0,0,.12);
@@ -83,17 +85,24 @@
     .tab.active{ border-color: color-mix(in srgb, var(--accent1) 55%, var(--tb-border)); background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 16%, transparent), color-mix(in srgb, var(--accent2) 12%, transparent)); }
 
     /* ===== Hero/Search ===== */
-    .wrap{ max-width: 1020px; margin: 0 auto; }
-    .title{ font-weight: 900; font-size: clamp(26px, 6vw, 40px); margin: 10px 0; letter-spacing: .2px; text-align:center; }
+    .wrap{ max-width: 920px; margin: 0 auto; }
+    .title{ font-weight: 900; font-size: clamp(26px, 6vw, 32px); margin: 10px 0; letter-spacing: .2px; text-align:center; }
     .subtitle{ margin: 0 0 10px; text-align:center; color: var(--muted); font-weight:800; }
-    .searchbar{ position: sticky; top:70px; z-index: 9; background: rgba(255,255,255,.9); padding: 10px 0 14px; backdrop-filter: blur(8px); }
-    .input{ width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; outline: none; font-size: 16px; box-shadow: var(--shadow); }
+    .searchbar{ position: relative; top:0; z-index: 10; background: var(--bg); padding: 10px 0 14px; }
+    .input{ width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); outline: none; font-size: 16px; box-shadow: var(--shadow); }
     .input:focus{ border-color: rgba(59,130,246,.45); box-shadow: 0 0 0 4px rgba(59,130,246,.12), var(--shadow); }
     .meta{ margin-top: 10px; font-size: 14px; color: var(--muted); display:flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .pill{ display:inline-flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: rgba(2,6,23,.02); font-weight: 800; }
 
     /* Filters */
-    .filters{ margin-top: 12px; display:flex; flex-wrap: wrap; gap: 14px; align-items:flex-start; }
+    .filter-dd{ position: relative; margin-top: 12px; display:inline-block; width: 100%; max-width: 640px; }
+    .filter-toggle{ appearance:none; -webkit-appearance:none; display:inline-flex; align-items:center; gap:8px; padding: 10px 12px; border-radius: var(--radius); border:1px solid var(--border); background: rgba(255,255,255,.9); box-shadow: var(--shadow); font-weight:900; cursor:pointer; color: var(--text); width: 100%; justify-content: space-between; }
+    .filter-toggle .caret{ transition: transform .18s var(--ease), opacity .18s var(--ease); opacity:.82; }
+    .filter-dd.open .caret{ transform: rotate(180deg); opacity:1; }
+    .filter-menu{ display:none; position:absolute; top: calc(100% + 10px); left:0; width: min(760px, calc(100vw - 40px)); border:1px solid var(--border); border-radius: 16px; background: color-mix(in srgb, var(--bg) 94%, transparent); box-shadow: var(--shadow); padding: 14px; z-index: 20; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+    .filter-dd.open .filter-menu{ display:block; animation: ddPop .16s var(--ease) both; }
+    @keyframes ddPop{ from{ opacity:0; transform: translateY(-6px) scale(.98); } to{ opacity:1; transform: translateY(0) scale(1); } }
+    .filters{ display:flex; flex-wrap: wrap; gap: 14px; align-items:flex-start; }
     .filter-group{ display:flex; flex-direction:column; gap:8px; }
     .filter-title{ font-size: 13px; font-weight:900; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
     .chip-row{ display:flex; gap:8px; flex-wrap: wrap; }
@@ -149,7 +158,7 @@
     @media (max-width: 640px){
       body{ padding: 16px; }
       .card-head{ flex-direction: column; align-items:flex-start; }
-      .searchbar{ top: 60px; }
+      .filter-menu{ width: min(100%, calc(100vw - 32px)); }
     }
   </style>
 </head>
@@ -184,14 +193,21 @@
           <span class="pill">Total: <span id="total">0</span></span>
           <span class="pill" id="queryPill" style="display:none;">Query: “<span id="queryText"></span>”</span>
         </div>
-        <div class="filters" aria-label="Filters">
-          <div class="filter-group">
-            <span class="filter-title">Item type</span>
-            <div class="chip-row" id="typeFilters"></div>
-          </div>
-          <div class="filter-group">
-            <span class="filter-title">Tags</span>
-            <div class="chip-row" id="tagFilters"></div>
+        <div class="filter-dd" id="filterDropdown">
+          <button id="filterToggle" class="filter-toggle" type="button" aria-expanded="false">
+            Filters <span class="caret" aria-hidden="true">▾</span>
+          </button>
+          <div id="filterMenu" class="filter-menu" role="menu">
+            <div class="filters" aria-label="Filters">
+              <div class="filter-group">
+                <span class="filter-title">Item type</span>
+                <div class="chip-row" id="typeFilters"></div>
+              </div>
+              <div class="filter-group">
+                <span class="filter-title">Tags</span>
+                <div class="chip-row" id="tagFilters"></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -239,6 +255,8 @@
   const queryText = document.getElementById("queryText");
   const typeFilters = document.getElementById("typeFilters");
   const tagFilters = document.getElementById("tagFilters");
+  const filterDropdown = document.getElementById("filterDropdown");
+  const filterToggle = document.getElementById("filterToggle");
 
   const detailWrap = document.getElementById("detailWrap");
   const detailClose = document.getElementById("detailClose");
@@ -254,6 +272,11 @@
   let filteredItems = [];
   const selectedTypes = new Set();
   const selectedTags = new Set();
+
+  function closeFilters(){
+    filterDropdown?.classList.remove("open");
+    filterToggle?.setAttribute("aria-expanded","false");
+  }
 
   function escapeHTML(str){
     return String(str)
@@ -517,8 +540,25 @@
   detailWrap?.addEventListener("click", (e) => {
     if(e.target === detailWrap) closeDetail();
   });
+
+  filterToggle?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if(!filterDropdown) return;
+    const isOpen = filterDropdown.classList.toggle("open");
+    filterToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  document.addEventListener("click", (e) => {
+    if(filterDropdown && !filterDropdown.contains(e.target)){
+      closeFilters();
+    }
+  });
+
   document.addEventListener("keydown", (e) => {
-    if(e.key === "Escape") closeDetail();
+    if(e.key === "Escape"){
+      closeDetail();
+      closeFilters();
+    }
   });
 
   searchInput?.addEventListener("input", applyFilters);
