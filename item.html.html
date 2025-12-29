@@ -224,23 +224,51 @@
     .meta{ margin-top: 10px; font-size: 14px; color: var(--muted); display:flex; gap: 10px; flex-wrap: wrap; align-items: center; }
     .pill{ display:inline-flex; align-items:center; gap:8px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: rgba(2,6,23,.02); font-weight: 700; }
 
-    .filters{ margin-top: 10px; display:flex; flex-wrap: wrap; gap: 8px; }
-    .filterLabel{ font-weight: 900; font-size: 13px; color: var(--muted); padding-right: 6px; }
-    .filterBtn{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.75);
+    .filterWrap{ position: relative; margin-left: auto; }
+    .filterToggle{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 12px;
       border-radius: 999px;
-      padding: 7px 12px;
-      font-weight: 800;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.9);
+      font-weight: 900;
       font-size: 13px;
+      color: var(--text);
+      box-shadow: var(--shadow);
       cursor: pointer;
-      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .filterToggle:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--border) 55%, var(--accent1)); box-shadow: 0 12px 24px rgba(2,6,23,.12); }
+    .filterToggle[aria-expanded="true"]{ border-color: color-mix(in srgb, var(--accent1) 55%, var(--border)); background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 12%, transparent), color-mix(in srgb, var(--accent2) 10%, transparent)); }
+    .filterIcon{ width: 18px; height: 18px; border-radius: 4px; object-fit: cover; }
+    .filterCaret{ transition: transform .16s ease; display:inline-block; }
+    .filterToggle[aria-expanded="true"] .filterCaret{ transform: rotate(180deg); }
+    .filters{ position: absolute; right: 0; top: calc(100% + 10px); min-width: 240px; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid var(--border); background: rgba(255,255,255,.95); box-shadow: var(--shadow); transform-origin: top right; transform: translateY(-6px) scale(.98); opacity: 0; pointer-events: none; transition: transform .16s var(--ease), opacity .16s var(--ease); z-index: 20; }
+    .filterWrap.open .filters{ opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+    .filterGroup{ display:flex; flex-wrap: wrap; gap: 8px; align-items:center; }
+    .filterLabel{ font-weight: 900; font-size: 13px; color: var(--muted); padding-right: 2px; }
+    .filterBtn{ 
+      border: 1px solid var(--border); 
+      background: rgba(255,255,255,.75); 
+      border-radius: 999px; 
+      padding: 7px 12px; 
+      font-weight: 800; 
+      font-size: 13px; 
+      cursor: pointer; 
+      transition: transform .12s ease, border-color .12s ease, background .12s ease; 
+      white-space: nowrap;
     }
     .filterBtn:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--border) 60%, var(--accent1)); }
     .filterBtn.active{
       background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 16%, transparent), color-mix(in srgb, var(--accent2) 12%, transparent));
       border-color: color-mix(in srgb, var(--accent1) 55%, var(--border));
       color: var(--tb-text);
+    }
+    @media (max-width: 540px){
+      .filterWrap{ width: 100%; }
+      .filters{ left: 0; right: auto; width: min(100%, 320px); }
     }
 
     .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
@@ -371,14 +399,25 @@
           <span class="pill">Showing: <span id="count">0</span></span>
           <span class="pill">Total: <span id="total">0</span></span>
           <span class="pill" id="queryPill" style="display:none;">Query: “<span id="queryText"></span>”</span>
-        </div>
-        <div class="filters" aria-label="Filters">
-          <span class="filterLabel">Item Type:</span>
-          <button class="filterBtn" data-filter-type="type" data-value="Container">Container</button>
-          <button class="filterBtn" data-filter-type="type" data-value="Tool/Gear">Tool/Gear</button>
-          <button class="filterBtn" data-filter-type="type" data-value="Material">Material</button>
-          <span class="filterLabel" style="margin-left:4px;">Tags:</span>
-          <button class="filterBtn" data-filter-type="tag" data-value="HUNTING">HUNTING</button>
+          <div class="filterWrap" data-filter-wrap>
+            <button class="filterToggle" type="button" aria-haspopup="true" aria-expanded="false" id="filterToggle">
+              <img class="filterIcon" src="https://i.ibb.co/67jB2RGP/3839020.png" alt="Filters">
+              <span>Filters</span>
+              <span class="filterCaret" aria-hidden="true">▾</span>
+            </button>
+            <div class="filters" aria-label="Filters" id="filters">
+              <div class="filterGroup">
+                <span class="filterLabel">Item Type:</span>
+                <button class="filterBtn" data-filter-type="type" data-value="Container">Container</button>
+                <button class="filterBtn" data-filter-type="type" data-value="Tool/Gear">Tool/Gear</button>
+                <button class="filterBtn" data-filter-type="type" data-value="Material">Material</button>
+              </div>
+              <div class="filterGroup">
+                <span class="filterLabel">Tags:</span>
+                <button class="filterBtn" data-filter-type="tag" data-value="HUNTING">HUNTING</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -422,6 +461,8 @@
   const queryPill = document.getElementById("queryPill");
   const queryText = document.getElementById("queryText");
   const filterButtons = Array.from(document.querySelectorAll(".filterBtn"));
+  const filterWrap = document.querySelector("[data-filter-wrap]");
+  const filterToggle = document.getElementById("filterToggle");
 
   const detailWrap = document.getElementById("detailWrap");
   const detailClose = document.getElementById("detailClose");
@@ -671,6 +712,30 @@
       applyFilters();
     });
   });
+
+  const closeFilters = () => {
+    if(!filterWrap) return;
+    filterWrap.classList.remove("open");
+    if(filterToggle) filterToggle.setAttribute("aria-expanded", "false");
+  };
+
+  const toggleFilters = () => {
+    if(!filterWrap || !filterToggle) return;
+    const willOpen = !filterWrap.classList.contains("open");
+    filterWrap.classList.toggle("open", willOpen);
+    filterToggle.setAttribute("aria-expanded", String(willOpen));
+  };
+
+  if(filterToggle){
+    filterToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFilters();
+    });
+  }
+  document.addEventListener("click", (e) => {
+    if(filterWrap && !filterWrap.contains(e.target)) closeFilters();
+  });
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeFilters(); });
 
   (async () => {
     empty.textContent = "Loading items from GitHub...";
