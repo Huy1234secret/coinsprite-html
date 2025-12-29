@@ -451,14 +451,15 @@
             </div>
           </div>
 
-          <div class="dd" data-dd>
-            <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="index">
-              Index <span class="caret" aria-hidden="true">▾</span>
-            </button>
-            <div class="dd-menu" role="menu" data-dd-menu>
-              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+            <div class="dd" data-dd>
+              <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="index">
+                Index <span class="caret" aria-hidden="true">▾</span>
+              </button>
+              <div class="dd-menu" role="menu" data-dd-menu>
+                <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
+                <a class="dd-item" role="menuitem" href="item.html.html" data-page="items">Item</a>
+              </div>
             </div>
-          </div>
         </nav>
       </div>
     </header>
@@ -510,9 +511,11 @@
       const page = (document.body.dataset.page || '').toLowerCase();
       const detectHunting = file.includes('hunting') || url.includes('hunting');
       const detectCreature = file.includes('creature') || url.includes('creature');
+      const detectItems = file.includes('item') || url.includes('item');
       const isHunting = page ? page === 'hunting' : detectHunting;
       const isCreature = page ? page === 'creature' : detectCreature;
-      const isHome = page ? page === 'home' : (!isHunting && !isCreature);
+      const isItems = page ? page === 'items' : detectItems;
+      const isHome = page ? page === 'home' : (!isHunting && !isCreature && !isItems);
 
       // Active styles
       const homeTab = document.querySelector('.tab[data-page="home"]');
@@ -520,6 +523,7 @@
       const indexBtn = document.querySelector('.tab[data-page="index"]');
       const huntingItem = document.querySelector('.dd-item[data-page="hunting"]');
       const creatureItem = document.querySelector('.dd-item[data-page="creature"]');
+      const itemItem = document.querySelector('.dd-item[data-page="items"]');
 
       if (isHome && homeTab) homeTab.classList.add('active');
       if (isHunting){
@@ -529,6 +533,10 @@
       if (isCreature){
         if (indexBtn) indexBtn.classList.add('active');
         if (creatureItem) creatureItem.classList.add('active');
+      }
+      if (isItems){
+        if (indexBtn) indexBtn.classList.add('active');
+        if (itemItem) itemItem.classList.add('active');
       }
       // Dropdown behavior
       const dropdowns = Array.from(document.querySelectorAll('[data-dd]'));
