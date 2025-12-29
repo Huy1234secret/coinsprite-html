@@ -229,7 +229,7 @@
       display:inline-flex;
       align-items:center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 7px 11px;
       border-radius: 999px;
       border: 1px solid var(--border);
       background: rgba(255,255,255,.9);
@@ -241,30 +241,33 @@
       transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease, background .12s ease;
     }
     .filterToggle:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--border) 55%, var(--accent1)); box-shadow: 0 12px 24px rgba(2,6,23,.12); }
-    .filterToggle[aria-expanded="true"]{ border-color: color-mix(in srgb, var(--accent1) 55%, var(--border)); background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 12%, transparent), color-mix(in srgb, var(--accent2) 10%, transparent)); }
+    .filterToggle[aria-expanded="true"], .filterWrap.is-active .filterToggle{
+      border-color: color-mix(in srgb, var(--accent1) 55%, var(--border));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 12%, transparent), color-mix(in srgb, var(--accent2) 10%, transparent));
+    }
     .filterIcon{ width: 18px; height: 18px; border-radius: 4px; object-fit: cover; }
     .filterCaret{ transition: transform .16s ease; display:inline-block; }
     .filterToggle[aria-expanded="true"] .filterCaret{ transform: rotate(180deg); }
-    .filters{ position: absolute; right: 0; top: calc(100% + 10px); min-width: 240px; display: grid; gap: 8px; padding: 12px; border-radius: 18px; border: 1px solid var(--border); background: rgba(255,255,255,.95); box-shadow: var(--shadow); transform-origin: top right; transform: translateY(-6px) scale(.98); opacity: 0; pointer-events: none; transition: transform .16s var(--ease), opacity .16s var(--ease); z-index: 20; }
+    .filters{ position: absolute; right: 0; top: calc(100% + 10px); min-width: 220px; display: grid; gap: 6px; padding: 9px 10px; border-radius: 18px; border: 1px solid var(--border); background: rgba(255,255,255,.95); box-shadow: var(--shadow); transform-origin: top right; transform: translateY(-6px) scale(.98); opacity: 0; pointer-events: none; transition: transform .16s var(--ease), opacity .16s var(--ease); z-index: 20; }
     .filterWrap.open .filters{ opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
-    .filterGroup{ display:flex; flex-wrap: wrap; gap: 8px; align-items:center; }
+    .filterGroup{ display:flex; flex-wrap: wrap; gap: 6px; align-items:center; }
     .filterLabel{ font-weight: 900; font-size: 13px; color: var(--muted); padding-right: 2px; }
-    .filterBtn{ 
-      border: 1px solid var(--border); 
-      background: rgba(255,255,255,.75); 
-      border-radius: 999px; 
-      padding: 7px 12px; 
-      font-weight: 800; 
-      font-size: 13px; 
-      cursor: pointer; 
-      transition: transform .12s ease, border-color .12s ease, background .12s ease; 
+    .filterBtn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
       white-space: nowrap;
     }
     .filterBtn:hover{ transform: translateY(-1px); border-color: color-mix(in srgb, var(--border) 60%, var(--accent1)); }
     .filterBtn.active{
       background: linear-gradient(135deg, color-mix(in srgb, var(--accent1) 16%, transparent), color-mix(in srgb, var(--accent2) 12%, transparent));
       border-color: color-mix(in srgb, var(--accent1) 55%, var(--border));
-      color: var(--tb-text);
+      color: #0f172a;
     }
     @media (max-width: 540px){
       .filterWrap{ width: 100%; }
@@ -665,6 +668,8 @@
     }
 
     const hasFilters = !!q || activeTypes.size > 0 || activeTags.size > 0;
+    const hasActiveFilterChip = activeTypes.size > 0 || activeTags.size > 0;
+    if(filterWrap){ filterWrap.classList.toggle("is-active", hasActiveFilterChip); }
     empty.textContent = hasFilters ? "No items match your search or filters." : "No items exist.";
 
     const filtered = items.filter(it => {
