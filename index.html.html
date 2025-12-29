@@ -484,8 +484,27 @@
     </main>
   </div>
 
-    <script>
+  <script>
     (() => {
+      const ensureAuthUserParam = (href) => {
+        try {
+          const url = new URL(href);
+          if (url.hostname === 'sites.google.com' && !url.searchParams.has('authuser')) {
+            url.searchParams.set('authuser', '0');
+            return url.toString();
+          }
+          return href;
+        } catch (err) {
+          return href;
+        }
+      };
+
+      const navLinks = document.querySelectorAll('a[href^="https://sites.google.com/"]');
+      navLinks.forEach(link => {
+        const updated = ensureAuthUserParam(link.href);
+        if (updated !== link.href) link.href = updated;
+      });
+
       const file = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
       const url = location.href.toLowerCase();
       const page = (document.body.dataset.page || '').toLowerCase();
