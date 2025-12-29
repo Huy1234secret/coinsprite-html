@@ -350,23 +350,17 @@
 
 
     .dd-item{
-      appearance: none;
-      -webkit-appearance: none;
       display:block;
       padding: 10px 12px;
       border-radius: 14px;
       border: 1px solid var(--tb-border);
       background: rgba(255,255,255,.16);
       box-shadow: var(--tb-shadow);
-      font: inherit;
       font-weight: 900;
       white-space: nowrap;
       color: var(--tb-text) !important;
-      text-align: left;
       text-decoration: none !important;
-      cursor: pointer;
       transition: transform .12s ease, border-color .12s ease;
-      width: 100%;
     }
     .dd-item:hover{
       transform: translateY(-1px);
@@ -418,14 +412,14 @@
         </div>
 
         <nav class="nav" aria-label="Navigation">
-          <button class="tab tab-btn" type="button" data-page="home" onclick="window.location.href='https://sites.google.com/view/coinsprite/home'">Home</button>
+          <a class="tab" href="https://sites.google.com/view/coinsprite/home" data-page="home">Home</a>
 
           <div class="dd" data-dd>
             <button class="tab tab-btn" type="button" aria-haspopup="true" aria-expanded="false" data-dd-btn data-page="features">
               Features <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <button class="dd-item" type="button" role="menuitem" data-page="hunting" onclick="window.location.href='https://sites.google.com/view/coinsprite/hunting'">Hunting</button>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/hunting" data-page="hunting">Hunting</a>
             </div>
           </div>
 
@@ -434,7 +428,7 @@
               Index <span class="caret" aria-hidden="true">▾</span>
             </button>
             <div class="dd-menu" role="menu" data-dd-menu>
-              <button class="dd-item" type="button" role="menuitem" data-page="creature" onclick="window.location.href='https://sites.google.com/view/coinsprite/creature'">Creature</button>
+              <a class="dd-item" role="menuitem" href="https://sites.google.com/view/coinsprite/creature" data-page="creature">Creature</a>
             </div>
           </div>
         </nav>
