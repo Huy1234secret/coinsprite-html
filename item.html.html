@@ -272,8 +272,7 @@
     }
 
     .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-top: 12px; }
-    .card{ border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 12px; background: #fff; box-shadow: 0 10px 22px rgba(2,6,23,.05); transition: transform .12s ease; }
-    .card:hover{ transform: translateY(-1px); }
+    .card{ border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 12px; background: #fff; box-shadow: 0 10px 22px rgba(2,6,23,.05); cursor:pointer; }
     .itemImgWrap{ width: 100%; aspect-ratio: 1.2 / 1; border-radius: 14px; overflow:hidden; background: rgba(2,6,23,.03); border: 1px solid var(--border); display:flex; align-items:center; justify-content:center; }
     .itemImg{ width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
     .cardBottom{ display:flex; flex-direction:column; gap:6px; margin-top: 8px; }
@@ -285,12 +284,12 @@
 
     .empty{ display:none; margin-top: 14px; padding: 14px 16px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--muted); font-weight: 700; }
 
-    /* Detail panel */
-    .detailWrap{ position: fixed; inset: 0; background: rgba(0,0,0,.25); display:flex; align-items:flex-start; justify-content:center; padding: 18px; backdrop-filter: blur(4px); opacity:0; pointer-events:none; transition: opacity .16s ease; }
-    .detailWrap.open{ opacity:1; pointer-events:auto; }
-    .detailCard{ max-width: 760px; width: min(100%, 760px); }
+    /* Detail panel (in-page, pushes grid down similar to creature) */
+    .detailWrap{ overflow:hidden; max-height: 0; opacity: 0; transform: translateY(-8px); transition: max-height .45s var(--ease), opacity .20s ease, transform .20s ease; margin-bottom: 0; pointer-events: none; }
+    .detailWrap.open{ max-height: 2200px; opacity: 1; transform: none; margin-bottom: 18px; pointer-events: auto; }
+    .detailCard{ max-width: 760px; width: min(100%, 760px); position: relative; margin: 0 auto; }
     .detailClose{ position:absolute; top:10px; right:10px; border: 1px solid var(--border); background:#fff; border-radius: 50%; width: 32px; height: 32px; cursor:pointer; font-weight: 900; }
-    .detailTop{ display:flex; gap: 16px; align-items:flex-start; flex-wrap: wrap; }
+    .detailTop{ display:flex; gap: 16px; align-items:flex-start; flex-wrap: wrap; padding-right: 44px; }
     .detailImgBox{ width: 240px; min-width: 220px; border: 1px solid var(--border); border-radius: 14px; background: rgba(2,6,23,.03); padding: 10px; display:flex; align-items:center; justify-content:center; }
     .detailImg{ width: 100%; height: 220px; object-fit: contain; image-rendering: pixelated; }
     .detailMeta{ flex: 1 1 280px; display:flex; flex-direction:column; gap: 10px; }
@@ -626,6 +625,9 @@
       queryPill.style.display = "none";
     }
 
+    const hasFilters = !!q || activeTypes.size > 0 || activeTags.size > 0;
+    empty.textContent = hasFilters ? "No items match your search or filters." : "No items exist.";
+
     const filtered = items.filter(it => {
       const nameMatch = String(it.name || "").toLowerCase().includes(q);
       const rarityMatch = String(it.rarity || "").toLowerCase().includes(q);
@@ -682,7 +684,7 @@
 
   function closeDetail(){
     detailWrap.classList.remove("open");
-    setTimeout(() => { detailWrap.hidden = true; }, 140);
+    setTimeout(() => { detailWrap.hidden = true; }, 360);
   }
   if(detailClose){ detailClose.addEventListener("click", closeDetail); }
   document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeDetail(); });
