@@ -284,6 +284,10 @@
     .tagRow{ display:flex; gap:6px; flex-wrap: wrap; }
     .tag{ padding: 6px 10px; border-radius: 999px; font-weight: 900; font-size: 12px; border: 1px solid var(--border); background: rgba(2,6,23,.04); }
     .tag.hunting{ background: #fecdd3; color: #7f1d1d; border-color: rgba(239,68,68,.45); }
+    .tag.digging{ background: #fed7aa; color: #9a3412; border-color: rgba(249,115,22,.45); }
+    .tag.mining{ background: #bfdbfe; color: #1e3a8a; border-color: rgba(59,130,246,.45); }
+    .tag.admin{ background: #e9d5ff; color: #5b21b6; border-color: rgba(139,92,246,.45); }
+    .tag.removed{ background: #e2e8f0; color: #334155; border-color: rgba(100,116,139,.45); }
 
     .empty{ display:none; margin-top: 14px; padding: 14px 16px; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--muted); font-weight: 700; }
 
@@ -344,21 +348,20 @@
     .secret{
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       font-weight: 900;
-      --stripe: 13px;
-      --period: calc(var(--stripe) * 2);
-      background-image: repeating-linear-gradient(180deg,#cacaca 0 var(--stripe),#000 var(--stripe) var(--period));
-      background-size: 100% var(--period);
-      background-position: 50% 0;
-      background-repeat: repeat;
+      --shine-size: 180%;
+      background-image: linear-gradient(120deg,#0ea5e9 0%,#a855f7 35%,#f472b6 55%,#facc15 75%,#0ea5e9 100%);
+      background-size: var(--shine-size) 100%;
+      background-position: 0% 50%;
       -webkit-background-clip: text;
       background-clip:text;
       color: transparent;
       -webkit-text-fill-color: transparent;
-      animation: SecretAni 2s linear infinite;
+      text-shadow: 0 0 14px rgba(14,165,233,.25);
+      animation: SecretAni 2.8s linear infinite;
       will-change: background-position;
       transform: translateZ(0);
     }
-    @keyframes SecretAni{ to{ background-position: 50% calc(var(--period) * -1); } }
+    @keyframes SecretAni{ to{ background-position: 100% 50%; } }
   </style>
 </head>
 <body data-page="items">
@@ -424,6 +427,10 @@
               <div class="filterGroup">
                 <span class="filterLabel">Tags:</span>
                 <button class="filterBtn" data-filter-type="tag" data-value="HUNTING">HUNTING</button>
+                <button class="filterBtn" data-filter-type="tag" data-value="DIGGING">Digging</button>
+                <button class="filterBtn" data-filter-type="tag" data-value="MINING">Mining</button>
+                <button class="filterBtn" data-filter-type="tag" data-value="ADMIN">Admin</button>
+                <button class="filterBtn" data-filter-type="tag" data-value="REMOVED">Removed</button>
               </div>
             </div>
           </div>
@@ -457,6 +464,13 @@
   const EXTRA_TAGS = {
     ITWoodenSword: ["HUNTING"],
     ITFist: ["HUNTING"]
+  };
+  const TAG_LABELS = {
+    HUNTING: "HUNTING",
+    DIGGING: "Digging",
+    MINING: "Mining",
+    ADMIN: "Admin",
+    REMOVED: "Removed"
   };
 
   const grid = document.getElementById("grid");
@@ -499,6 +513,22 @@
     if(rr === "mythical") return "mythical";
     if(rr === "secret") return "secret";
     return "";
+  }
+  function normalizeTag(rawTag){
+    const tag = String(rawTag || "").trim().toLowerCase();
+    if(!tag) return null;
+    if(tag.includes("mining")) return "MINING";
+    if(tag.includes("digging")) return "DIGGING";
+    if(tag.includes("removed")) return "REMOVED";
+    if(tag.includes("admin")) return "ADMIN";
+    if(tag.includes("hunt")) return "HUNTING";
+    return null;
+  }
+  function tagClass(tag){
+    return String(tag || "").trim().toLowerCase();
+  }
+  function tagLabel(tag){
+    return TAG_LABELS[tag] || tag;
   }
 
   // parsing helpers
@@ -561,14 +591,19 @@
       const durability = /\bdurability\s*:\s*Infinity/.test(t) ? Infinity : durabilityVal;
       const damageMin = matchNum(t, /damage\s*:\s*\{[^}]*min\s*:\s*([0-9.]+)/);
       const damageMax = matchNum(t, /damage\s*:\s*\{[^}]*max\s*:\s*([0-9.]+)/);
+      const minePow = matchNum(t, /\bMinePow\s*:\s*([0-9.]+)/);
       const info = matchStr(t, /\binfo\s*:\s*['"`]([^'"`]+)['"`]/);
       const obtainment = matchStr(t, /\bobtainment\s*:\s*['"`]([^'"`]+)['"`]/);
       const usage = matchStr(t, /\busage\s*:\s*['"`]([^'"`]+)['"`]/);
 
       const tags = EXTRA_TAGS[id] ? [...EXTRA_TAGS[id]] : [];
+      const tagProp = matchStr(t, /\btag\s*:\s*['"`]([^'"`]+)['"`]/);
+      const tagInline = matchStr(t, /Tag:\s*([A-Za-z]+)/i);
+      const normalizedTag = normalizeTag(tagProp || tagInline);
+      if(normalizedTag && !tags.includes(normalizedTag)) tags.push(normalizedTag);
 
       const hasSellPrice = sellPriceRaw !== null && sellPriceRaw !== undefined;
-      const item = { id, name, image, rarity, type, value, sellPrice: isFinite(sellPrice) ? sellPrice : sellPriceRaw === "0" ? 0 : null, tradable, durability, damage: { min: damageMin, max: damageMax }, info, obtainment, usage, tags, hasSellPrice };
+      const item = { id, name, image, rarity, type, value, sellPrice: isFinite(sellPrice) ? sellPrice : sellPriceRaw === "0" ? 0 : null, tradable, durability, damage: { min: damageMin, max: damageMax }, minePow, info, obtainment, usage, tags, hasSellPrice };
       if(item.id){ list.push(item); }
       i = block.end + 1;
     }
@@ -641,7 +676,7 @@
     itemsById = new Map(list.map(c => [c._id, c]));
     grid.innerHTML = list.map(it => {
       const img = it.image || "";
-      const tags = (it.tags || []).map(tag => `<span class="tag hunting">${escapeHTML(tag)}</span>`).join("");
+      const tags = (it.tags || []).map(tag => `<span class="tag ${tagClass(tag)}">${escapeHTML(tagLabel(tag))}</span>`).join("");
       return `
         <div class="card" data-id="${escapeHTML(it._id)}" role="button" tabindex="0">
           <div class="itemImgWrap">
@@ -704,7 +739,7 @@
     detailTags.innerHTML = `
       ${item.rarity ? `<span class="pill"><span class="${rarityClass(item.rarity)}">${escapeHTML(item.rarity)}</span></span>` : ''}
       ${item.type ? `<span class="pill">${escapeHTML(item.type)}</span>` : ''}
-      ${(item.tags || []).map(tag => `<span class="tag hunting">${escapeHTML(tag)}</span>`).join("")}
+      ${(item.tags || []).map(tag => `<span class="tag ${tagClass(tag)}">${escapeHTML(tagLabel(tag))}</span>`).join("")}
     `;
 
     const infoLines = [];
@@ -716,6 +751,9 @@
     if(dur) infoLines.push(`<div class="infoRow"><span class="label">durability:</span>${escapeHTML(dur)}</div>`);
     const dmg = formatDamage(item.damage);
     if(dmg) infoLines.push(`<div class="infoRow"><span class="label">damage:</span>${escapeHTML(dmg)}</div>`);
+    if(typeof item.minePow === "number" && Number.isFinite(item.minePow)){
+      infoLines.push(`<div class="infoRow"><span class="label">Mine power:</span>${escapeHTML(String(item.minePow))}</div>`);
+    }
 
     detailInfo.innerHTML = infoLines.join("");
     optimizeInfoLayout();
