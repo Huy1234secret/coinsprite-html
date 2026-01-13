@@ -18,5 +18,7 @@ It means a button component is trying to use an invalid emoji. To fix it:
    "emoji": { "id": "123456789012345678", "name": "my_emoji" }
    ```
 3. **Avoid passing empty or mismatched emoji data** (e.g., an `id` that does not exist, or an `id` without a matching `name`).
+4. **Do not include `id` for Unicode emojis**; if you're using built-in emoji characters, send only `name` so Discord doesn't validate a bogus `id`.
+5. **Double-check nested components** (like action rows inside other components) to ensure every button's emoji object follows the same rules.
 
 Once the emoji payload is corrected, the interaction update should succeed without the 50035 error.
